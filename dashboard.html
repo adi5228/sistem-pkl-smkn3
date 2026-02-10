@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Dashboard Siswa - SMKN 3 Kendari</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body { 
+        background-color: #f4f6f9; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        padding-bottom: 40px; 
+    }
+    
+    /* Header Card Style */
+    .welcome-card {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white; border: none; border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        margin-bottom: 20px;
+    }
+    
+    .header-logo {
+        height: 60px; width: auto;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        background: rgba(255,255,255,0.15);
+        padding: 5px; border-radius: 50%;
+        transition: transform 0.3s;
+    }
+    .header-logo:hover { transform: scale(1.1); }
+
+    /* Styling tanda wajib (*) */
+    .required-mark {
+        color: #dc3545; 
+        font-weight: bold;
+        margin-left: 3px;
+    }
+
+    /* Card Form */
+    .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .card-header {
+      background-color: white; border-bottom: 1px solid #eee; padding: 15px;
+      font-size: 1.1rem; border-radius: 12px 12px 0 0 !important;
+    }
+    .readonly-input { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; color: #495057; }
+    
+    /* Loader */
+    .loader { 
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(255,255,255,0.95); z-index: 9999; 
+      justify-content: center; align-items: center; flex-direction: column;
+    }
+
+    /* Foto Area */
+    .img-preview-box { 
+      width: 160px; height: 213px; /* Rasio 3:4 */
+      border: 2px dashed #ccc; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; 
+      margin-bottom: 15px; background: #f8f9fa; overflow: hidden; position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .img-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    .crop-container { max-height: 500px; background-color: #333; }
+    #imageToCrop { max-width: 100%; display: block; }
+
+    /* Responsive HP Styles */
+    @media (max-width: 576px) {
+        .container { padding-left: 15px; padding-right: 15px; }
+        
+        .header-logo { height: 45px; }
+        
+        .welcome-card h3.fw-bold { font-size: 1.2rem; }
+        .welcome-card .card-body { padding: 1rem; }
+        
+        /* Adjust tombol header agar tidak terlalu besar */
+        .btn-sm-mobile {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Form adjustments */
+        .card-body { padding: 1.25rem !important; }
+        .form-label { font-size: 0.85rem; }
+        .form-control { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loader" class="loader">
+  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+  <p class="mt-3 text-muted fw-bold">Memuat Data...</p>
+</div>
+
+<div class="container py-4">
+  
+  <div class="card welcome-card">
+    <div class="card-body p-3 p-md-4">
+        <div class="d-flex align-items-center justify-content-between gap-2">
+            <img src="https://drive.google.com/thumbnail?id=1WB04Opaj-mN0nD0vLheD0FL2VuQ3OD5q&sz=w200" class="header-logo" alt="Logo Sultra">
+            <div class="text-center flex-grow-1 text-white">
+                <h3 class="fw-bold mb-0">DATA PKL</h3>
+                <p class="mb-1 opacity-75 small text-uppercase letter-spacing-1 d-none d-sm-block">Sistem Informasi PKL SMKN 3 Kendari</p>
+                <p class="mb-1 opacity-75 small text-uppercase letter-spacing-1 d-block d-sm-none" style="font-size: 0.7rem;">SMKN 3 KENDARI</p>
+                <div class="mt-1">
+                    <span class="badge bg-white text-primary rounded-pill px-3 py-1 shadow-sm text-truncate" style="max-width: 150px;">
+                        <i class="bi bi-person-circle me-1"></i> <span id="userDisplay">Memuat...</span>
+                    </span>
+                </div>
+            </div>
+            <img src="https://drive.google.com/thumbnail?id=1k4CSzwMHage8h4jJSXpZFkyA1TiogD3j&sz=w200" class="header-logo" alt="Logo SMKN 3">
+        </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mb-3">
+      <button onclick="showChangePasswordModal()" class="btn btn-warning text-white fw-bold shadow-sm btn-sm btn-sm-mobile">
+        <i class="bi bi-key-fill me-1"></i> Ganti Password
+      </button>
+      <button onclick="logout()" class="btn btn-danger fw-bold shadow-sm px-3 btn-sm btn-sm-mobile">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </button>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-header fw-bold text-primary bg-white py-3">
+          <i class="bi bi-person-lines-fill me-2"></i> Biodata (<span id="jurusanDisplay">-</span>)
+        </div>
+        <div class="card-body p-4">
+          
+          <div class="alert alert-danger d-flex align-items-start mb-4 small" role="alert">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0 me-2 fs-5 mt-1"></i>
+            <div>
+              <strong>Perhatian:</strong> Kolom dengan tanda bintang (<span class="fw-bold fs-6">*</span>) wajib diisi dengan data yang benar!
+            </div>
+          </div>
+
+          <form id="studentForm" onsubmit="handleSave(event)" class="needs-validation">
+            
+            <div class="mb-4 text-center">
+              <label class="form-label d-block text-center fw-bold text-muted small mb-3">
+                  FOTO PROFIL (WAJIB SERAGAM) <span class="required-mark">*</span>
+              </label>
+              
+              <div class="d-flex flex-column align-items-center">
+                <div class="img-preview-box" id="previewContainer">
+                  <div class="text-center text-muted small">
+                      <i class="bi bi-camera fs-1 d-block mb-2"></i>
+                      Preview Foto
+                  </div>
+                </div>
+                
+                <input type="file" class="form-control form-control-sm w-75 mt-2" id="fotoInput" accept="image/*" onchange="initCropper(this)">
+                <small class="text-muted mt-1 fst-italic" style="font-size: 0.75rem">*Upload & sesuaikan posisi foto (3:4)</small>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label fw-bold small text-muted">NISN</label>
+                <input type="text" class="form-control readonly-input" id="nisn" readonly placeholder="...">
+              </div>
+              
+              <div class="col-6 mb-3">
+                <label class="form-label fw-bold small text-muted">Tahun PKL <span class="required-mark">*</span></label>
+                <input type="number" class="form-control" id="tahun_pkl" required placeholder="Contoh: 2026">
+              </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-muted">Nama Lengkap (Sesuai Ijazah) <span class="required-mark">*</span></label>
+                <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small text-muted">Alamat Lengkap <span class="required-mark">*</span></label>
+              <textarea class="form-control" id="alamat" rows="2" required placeholder="Jalan, No. Rumah, Kelurahan..."></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold small text-muted">No. HP Siswa (WA) <span class="required-mark">*</span></label>
+                <input type="text" inputmode="numeric" class="form-control" id="hp_siswa" required placeholder="08..." pattern="[0-9+]*">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold small text-muted">No. HP Orang Tua <span class="required-mark">*</span></label>
+                <input type="text" inputmode="numeric" class="form-control" id="hp_ortu" required placeholder="08..." pattern="[0-9+]*">
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm" id="saveBtn">
+                <i class="bi bi-save me-2"></i> SIMPAN PERUBAHAN
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cropModal" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title"><i class="bi bi-crop"></i> Sesuaikan Foto</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="cancelCrop()"></button>
+      </div>
+      <div class="modal-body p-0 text-center bg-secondary">
+        <div class="crop-container d-flex justify-content-center align-items-center" style="min-height: 300px;">
+            <img id="imageToCrop" src="" style="max-height: 70vh;">
+        </div>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <div class="me-auto d-flex gap-1">
+             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="rotateImage(-90)"><i class="bi bi-arrow-counterclockwise"></i></button>
+             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="rotateImage(90)"><i class="bi bi-arrow-clockwise"></i></button>
+             <button type="button" class="btn btn-outline-danger btn-sm" onclick="resetCropper()"><i class="bi bi-arrow-repeat"></i></button>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="cancelCrop()">Batal</button>
+        <button type="button" class="btn btn-primary btn-sm fw-bold px-3" onclick="applyCrop()">
+            <i class="bi bi-check-lg me-1"></i> OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="passwordModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-warning text-dark py-2" id="modalHeader">
+        <h6 class="modal-title fw-bold" id="passModalTitle"><i class="bi bi-shield-lock-fill me-2"></i>Ganti Password</h6>
+        <button type="button" class="btn-close" id="btnClsPass" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div id="alertWajib" class="alert alert-danger small d-none shadow-sm mb-3">
+           <div class="d-flex align-items-center">
+               <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+               <div>
+                   <strong>KEAMANAN AKUN</strong><br>
+                   Anda masih menggunakan password default. Demi keamanan, mohon ganti password sekarang.
+               </div>
+           </div>
+        </div>
+        
+        <form onsubmit="handleChangePassword(event)">
+            <div class="mb-3">
+                <label class="form-label fw-bold small">Password Baru <span class="required-mark">*</span></label>
+                <input type="password" id="newPass1" class="form-control bg-light" required placeholder="Min 6 karakter">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold small">Konfirmasi Password <span class="required-mark">*</span></label>
+                <input type="password" id="newPass2" class="form-control bg-light" required placeholder="Ketik ulang password">
+                <div id="passMatchError" class="text-danger small mt-1 d-none"><i class="bi bi-x-circle"></i> Password tidak cocok!</div>
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary fw-bold py-2">SIMPAN PASSWORD</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+  let currentUser = {};
+  let currentFile = { base64: null, type: null, name: null };
+  let cropper; 
+  let cropModal; 
+  let passwordModal;
+  const imageElement = document.getElementById('imageToCrop');
+
+  window.onload = function() { checkSession(); };
+
+  function checkSession() {
+    const token = localStorage.getItem('sessionToken');
+    if (!token) { logout(); return; }
+    loadDashboardData(token);
+  }
+
+  function loadDashboardData(token) {
+    document.getElementById('loader').style.display = 'flex';
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.success) {
+          currentUser = res.data.user;
+          document.getElementById('userDisplay').innerText = currentUser.nama;
+          document.getElementById('jurusanDisplay').innerText = currentUser.jurusan.toUpperCase().replace('_', ' ');
+          if (document.getElementById('nisn')) document.getElementById('nisn').value = currentUser.nisn;
+          
+          // Load Tahun PKL jika ada
+          if (document.getElementById('tahun_pkl') && currentUser.tahun_pkl) {
+              document.getElementById('tahun_pkl').value = currentUser.tahun_pkl;
+          }
+          
+          if (currentUser.isDefaultPassword) {
+              showForceChangePasswordModal();
+          } else {
+              loadStudentProfile(token);
+          }
+          
+        } else { logout(); }
+      })
+      .withFailureHandler(function(err) {
+        alert("Gagal koneksi server: " + err);
+        document.getElementById('loader').style.display = 'none';
+      })
+      .api('getDashboardData', { sessionToken: token });
+  }
+
+  function loadStudentProfile(token) {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        document.getElementById('loader').style.display = 'none';
+        if (res.success && res.profile) {
+          const p = res.profile;
+          document.getElementById('nama').value = p.nama || currentUser.nama;
+          document.getElementById('alamat').value = p.alamat;
+          document.getElementById('hp_siswa').value = p.no_hp_siswa;
+          document.getElementById('hp_ortu').value = p.no_hp_orangtua;
+          
+          if (p.tahun_pkl) document.getElementById('tahun_pkl').value = p.tahun_pkl;
+          
+          const container = document.getElementById('previewContainer');
+          if (p.foto_url) {
+              container.innerHTML = `<img src="${p.foto_url}" alt="Foto Profil">`;
+          } else if (p.foto_id) {
+              container.innerHTML = '<span class="text-success fw-bold small"><i class="bi bi-check-circle-fill"></i> Foto Tersimpan<br>(Refresh jika tidak muncul)</span>';
+          }
+        } else { document.getElementById('nama').value = currentUser.nama; }
+      })
+      .api('getStudentProfile', { sessionToken: token });
+  }
+
+  // --- CROPPER JS ---
+  function initCropper(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (file.size > 5 * 1024 * 1024) { Swal.fire('File Terlalu Besar', 'Maksimal 5MB.', 'warning'); input.value = ''; return; }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imageElement.src = e.target.result;
+        currentFile.name = file.name;
+        currentFile.type = 'image/jpeg'; 
+        if(!cropModal) cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
+        cropModal.show();
+        setTimeout(() => {
+            if(cropper) cropper.destroy(); 
+            cropper = new Cropper(imageElement, { aspectRatio: 3 / 4, viewMode: 1, autoCropArea: 1, responsive: true });
+        }, 200);
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+  function rotateImage(degree) { if(cropper) cropper.rotate(degree); }
+  function resetCropper() { if(cropper) cropper.reset(); }
+  function cancelCrop() { if(cropModal) cropModal.hide(); document.getElementById('fotoInput').value = ''; if(cropper) cropper.destroy(); }
+  function applyCrop() {
+      if(!cropper) return;
+      const canvas = cropper.getCroppedCanvas({ width: 600, height: 800, imageSmoothingQuality: 'high' });
+      currentFile.base64 = canvas.toDataURL('image/jpeg', 0.85);
+      document.getElementById('previewContainer').innerHTML = `<img src="${currentFile.base64}" style="width:100%; height:100%; object-fit:cover;">`;
+      cropModal.hide();
+  }
+
+  // --- PASSWORD ---
+  function showChangePasswordModal() {
+      if(!passwordModal) passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+      document.getElementById('newPass1').value = '';
+      document.getElementById('newPass2').value = '';
+      document.getElementById('alertWajib').classList.add('d-none');
+      document.getElementById('passModalTitle').innerHTML = '<i class="bi bi-shield-lock-fill me-2"></i>Ganti Password';
+      document.getElementById('modalHeader').classList.remove('bg-danger', 'text-white');
+      document.getElementById('modalHeader').classList.add('bg-warning', 'text-dark');
+      document.getElementById('btnClsPass').style.display = 'block'; 
+      passwordModal.show();
+  }
+
+  function showForceChangePasswordModal() {
+      if(!passwordModal) passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('newPass1').value = '';
+      document.getElementById('newPass2').value = '';
+      document.getElementById('alertWajib').classList.remove('d-none');
+      document.getElementById('passModalTitle').innerHTML = '<i class="bi bi-exclamation-octagon-fill me-2"></i>WAJIB GANTI PASSWORD';
+      document.getElementById('modalHeader').classList.remove('bg-warning', 'text-dark');
+      document.getElementById('modalHeader').classList.add('bg-danger', 'text-white');
+      document.getElementById('btnClsPass').style.display = 'none';
+      passwordModal.show();
+  }
+
+  function handleChangePassword(e) {
+      e.preventDefault();
+      const p1 = document.getElementById('newPass1').value;
+      const p2 = document.getElementById('newPass2').value;
+      const errDiv = document.getElementById('passMatchError');
+      
+      if (p1 !== p2) { errDiv.classList.remove('d-none'); return; } 
+      else { errDiv.classList.add('d-none'); }
+      if (p1.length < 4) { Swal.fire('Password Lemah', 'Minimal 4 karakter.', 'warning'); return; }
+
+      const token = localStorage.getItem('sessionToken');
+      Swal.fire({title: 'Menyimpan...', didOpen: () => Swal.showLoading()});
+      
+      google.script.run.withSuccessHandler(res => {
+          if(res.success) {
+              passwordModal.hide();
+              Swal.fire({title: 'Sukses', text: 'Password berhasil diperbarui. Silakan login ulang.', icon: 'success', confirmButtonText: 'OK'})
+              .then(() => logout());
+          } else { Swal.fire('Gagal', res.error, 'error'); }
+      }).api('changePassword', { sessionToken: token, newPassword: p1 });
+  }
+
+  // --- SIMPAN ---
+  function handleSave(e) {
+    e.preventDefault();
+    
+    // Validasi Manual
+    const form = document.getElementById('studentForm');
+    if (!form.checkValidity()) {
+        e.stopPropagation();
+        form.classList.add('was-validated');
+        Swal.fire('Data Belum Lengkap', 'Mohon isi semua kolom yang bertanda merah.', 'warning');
+        return;
+    }
+
+    const token = localStorage.getItem('sessionToken');
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+    
+    const formData = {
+      nama: document.getElementById('nama').value,
+      alamat: document.getElementById('alamat').value,
+      no_hp_siswa: document.getElementById('hp_siswa').value,
+      no_hp_orangtua: document.getElementById('hp_ortu').value,
+      tahun_pkl: document.getElementById('tahun_pkl').value,
+      foto_id: null, foto_url: null
+    };
+
+    if (currentFile.base64) {
+      google.script.run.withSuccessHandler(function(resFile) {
+           if (resFile.success) {
+              formData.foto_id = resFile.fileId;
+              formData.foto_url = resFile.thumbnailLink;
+              saveProfileData(token, formData, btn);
+           } else { Swal.fire('Gagal Upload Foto', resFile.error, 'error'); resetButton(btn); }
+      }).api('uploadFoto', { sessionToken: token, fileData: currentFile.base64, fileName: currentFile.name, fileType: currentFile.type });
+    } else { saveProfileData(token, formData, btn); }
+  }
+
+  function saveProfileData(token, formData, btn) {
+    google.script.run.withSuccessHandler(function(res) {
+         resetButton(btn);
+         if (res.success) { Swal.fire({title: 'Berhasil!', text: 'Data profil berhasil disimpan.', icon: 'success', confirmButtonColor: '#0d6efd'}); }
+         else { Swal.fire('Gagal Menyimpan', res.error, 'error'); }
+      }).withFailureHandler(function(err) { resetButton(btn); Swal.fire('Error Koneksi', err.message, 'error'); })
+      .api('saveStudentProfile', { sessionToken: token, formData: formData });
+  }
+
+  function resetButton(btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-2"></i> SIMPAN PERUBAHAN'; }
+  
+  // --- LOGOUT AMAN (ANTI-SANDBOX) ---
+  function logout() {
+    Swal.fire({
+      title: 'Keluar?',
+      text: "Sesi Anda akan berakhir.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.clear();
+        
+        // Redirect dengan Trik Link Click
+        google.script.run.withSuccessHandler(url => {
+           const link = document.createElement('a');
+           link.href = url; // Kembali ke root (login)
+           link.target = "_top";
+           document.body.appendChild(link);
+           link.click();
+        }).getAppUrl();
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

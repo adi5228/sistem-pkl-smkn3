@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem PKL SMKN 3 Kendari</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      
+      /* Animasi Spinner Modern */
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #FFF;
+        border-bottom-color: #0d6efd;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      /* Logo kecil di bawah loading */
+      .brand-footer {
+        position: absolute;
+        bottom: 30px;
+        font-size: 0.75rem;
+        color: #adb5bd;
+        font-weight: 500;
+      }
+    </style>
+    
+    <script>
+      window.onload = function() {
+        // [LOGIKA ANTI-REDUNDANT] Ambil status session
+        const token = localStorage.getItem('sessionToken');
+        const role = localStorage.getItem('userRole'); 
+
+        function renderPage(html) {
+           document.open(); 
+           document.write(html); 
+           document.close();
+        }
+
+        function handleError(e) {
+           console.error("Router Error: ", e);
+           // Jika error, hapus session agar user bisa login ulang dengan bersih
+           localStorage.clear();
+           document.body.innerHTML = `
+             <div style="text-align:center; padding:30px; font-family:sans-serif;">
+               <div style="color:#dc3545; font-size:3rem; margin-bottom:10px;">⚠️</div>
+               <h4 style="margin-bottom:10px; color:#343a40;">Koneksi Terputus</h4>
+               <p style="color:#6c757d; font-size:0.9rem;">Gagal menghubungkan ke server Google Apps Script.</p>
+               <button onclick="window.top.location.reload()" 
+                       style="background:#0d6efd; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-weight:600; margin-top:15px;">
+                 Coba Lagi
+               </button>
+             </div>
+           `;
+        }
+
+        // --- PROSES ROUTING ---
+        if (token && role) {
+           if (role === 'ADMIN') {
+             google.script.run
+               .withSuccessHandler(renderPage)
+               .withFailureHandler(handleError)
+               .include('admin'); 
+           } else {
+             google.script.run
+               .withSuccessHandler(renderPage)
+               .withFailureHandler(handleError)
+               .include('dashboard'); 
+           }
+        } else {
+           // Jika tidak ada token, pastikan storage bersih lalu lempar ke login
+           localStorage.clear();
+           google.script.run
+             .withSuccessHandler(renderPage)
+             .withFailureHandler(handleError)
+             .include('login'); 
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="loader"></div>
+    <div class="loading-text">Menyiapkan Ruang Kerja...</div>
+    <div class="brand-footer">SMKN 3 KENDARI</div>
+  </body>
+</html>

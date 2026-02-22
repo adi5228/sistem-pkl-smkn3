@@ -1,124 +1,117 @@
-# Sistem Informasi Logbook & Pendataan PKL - SMKN 3 Kendari
-
-![Google Apps Script](https://img.shields.io/badge/Backend-Google%20Apps%20Script-blue)
-![Google Sheets](https://img.shields.io/badge/Database-Google%20Sheets-green)
-![Bootstrap 5](https://img.shields.io/badge/Frontend-Bootstrap%205-purple)
-
-Aplikasi berbasis web (*Web App*) Serverless untuk manajemen data siswa Praktik Kerja Lapangan (PKL). Aplikasi ini menangani pendaftaran siswa, manajemen biodata, upload foto, dan pengelolaan data oleh Admin Sekolah serta Admin Jurusan.
-
-## 🌟 Fitur Utama
-
-* **Multi-Role Access:**
-    * **Super Admin:** Akses penuh ke semua jurusan & manajemen akun admin.
-    * **Admin Jurusan:** Terkunci hanya pada data jurusan masing-masing.
-    * **Siswa:** Registrasi mandiri, edit biodata, dan upload foto.
-* **Automated Setup:** Script inisialisasi untuk membuat akun admin otomatis.
-* **Mobile Responsive:** Tampilan optimal di Smartphone & Desktop.
-* **Anti-Sandbox Logic:** Bypass keamanan browser modern (iframe redirect) dengan metode konfirmasi user.
-* **Secure Data:** Password hashing (MD5) dan perlindungan data NISN (format teks).
-* **Export Excel:** Fitur unduh rekap data siswa per angkatan beserta foto.
+<div align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Logo_Halu_Oleo_University.png" alt="Logo UHO" width="100"/>
+  <h1>🎓 Sistem Informasi Pendataan PKL <br> SMKN 3 Kendari</h1>
+  <p><i>Aplikasi Web Single Page Application (SPA) berbasis Google Apps Script & Google Sheets</i></p>
+</div>
 
 ---
 
-## 📂 Struktur File
+Sistem Informasi ini dirancang khusus untuk mendigitalkan dan mempermudah proses pendataan biodata serta pas foto siswa yang akan melaksanakan Praktik Kerja Lapangan (PKL) di SMKN 3 Kendari. Menggabungkan kemudahan Google Sheets sebagai *database* dengan antarmuka web modern yang responsif.
 
-| Nama File di GitHub | Nama di Apps Script | Fungsi Utama |
-| :--- | :--- | :--- |
-| `Code.js` | `Code.gs` | Router utama API, inisialisasi sistem, & helper HTML. |
-| `AuthService.js` | `AuthService.gs` | Login, Validasi Sesi, Registrasi Siswa. |
-| `AdminService.js` | `AdminService.gs` | CRUD Admin, Dashboard Statistik, Export Data. |
-| `StudentService.js` | `StudentService.gs` | Profil Siswa, Ganti Password, Upload Foto. |
-| `Utils.js` | `Utils.gs` | Utility (Hash Password, Format Tanggal, CRUD Sheet). |
-| `login.html` | `login.html` | Halaman Login & Registrasi. |
-| `admin.html` | `admin.html` | Dashboard Admin (SPA). |
-| `dashboard.html` | `dashboard.html` | Dashboard Siswa (SPA). |
-| `index.html` | `index.html` | Halaman utama & Routing logic. |
+## 👨‍💻 Tim Pengembang (Kerja Praktik)
+Proyek ini dibangun dengan penuh dedikasi oleh Tim Kerja Praktik (KP) Mahasiswa **Teknik Informatika, Universitas Halu Oleo (UHO) - 2026**:
 
----
+| Nama | NIM / Stambuk | Peran / Kontribusi |
+| :--- | :---: | :--- |
+| **Adi Setiawan** | `E1E123023` | *Fullstack Development & Backend Logic* |
+| **Indah Lestari** | `E1E123004` | *UI/UX Design & Frontend Integration* |
+| **Nirmala** | `E1E123012` | *System Testing & Database Management* |
 
-## 🚀 Panduan Instalasi (Deployment)
-
-### Langkah 1: Persiapan Database
-1.  Buat **Google Spreadsheet** baru di Google Drive.
-2.  Beri nama (misal: `DB_PKL_SMKN3_2026`).
-3.  **PENTING:** Anda tidak perlu membuat sheet manual. Script inisialisasi akan melakukannya untuk Anda (lihat Langkah 3).
-
-### Langkah 2: Pemasangan Kode
-1.  Di Spreadsheet, klik menu **Ekstensi** > **Apps Script**.
-2.  Salin semua kode dari repository ini ke dalam editor Apps Script.
-    * **Catatan:** File `.js` di GitHub harus diubah namanya menjadi `.gs` di Editor Google.
-3.  **Konfigurasi Keamanan:**
-    * Buka `AuthService.gs`.
-    * Cari variabel `SESSION_SECRET`.
-    * Ganti `'GANTI_DENGAN_TEXT_RAHASIA_ANDA'` dengan teks acak yang panjang (misal: `kuncirahasia_sekolah_12345`).
-
-### Langkah 3: Inisialisasi Akun Admin (PENTING)
-Di dalam file `Code.gs` (bagian paling bawah), terdapat fungsi `setupSystemAccounts` yang mungkin sedang dijadikan komentar (`//`).
-
-1.  Buka `Code.gs`.
-2.  Hapus tanda komentar (`/* ... */`) pada fungsi `setupSystemAccounts` jika ada, agar kodenya aktif.
-3.  Pilih fungsi **`setupSystemAccounts`** pada dropdown menu di atas editor.
-4.  Klik tombol **Jalankan (Run)**.
-5.  Berikan izin (Review Permissions) jika diminta.
-6.  **Hasil:** Script akan otomatis membuat sheet `users` dan mengisi akun-akun berikut dengan password default **`123456`**:
-    * `admin` (Super Admin)
-    * `admin_tjkt`
-    * `admin_perhotelan`
-    * `admin_boga`
-    * `admin_busana`
-    * `admin_kecantikan`
-7.  **Saran:** Setelah dijalankan, jadikan fungsi tersebut komentar lagi agar tidak dijalankan tidak sengaja.
-
-### Langkah 4: Deploy Web App
-1.  Klik tombol **Terapkan (Deploy)** (Warna Biru) -> **Penerapan Baru (New Deployment)**.
-2.  Pilih jenis: **Aplikasi Web**.
-3.  Konfigurasi:
-    * **Execute as:** **Me (Saya)**.
-    * **Who has access:** **Anyone (Siapa saja)**.
-4.  Klik **Deploy**.
-5.  Salin URL Web App yang diberikan.
+*(Catatan: Peran di atas bisa Anda sesuaikan sendiri di GitHub jika diperlukan)* ❤️
 
 ---
 
-## 📖 Cara Penggunaan
+## ✨ Fitur Utama
 
-### Login Admin
-1.  Buka URL Aplikasi.
-2.  Gunakan username default (misal: `admin`) dan password `123456`.
-3.  **Wajib:** Segera ganti password melalui menu "Pengaturan Akun".
+### 👨‍🎓 Fitur Siswa
+* **Registrasi Mandiri:** Siswa dapat mendaftarkan akunnya sendiri menggunakan NISN.
+* **Auto-Formatting:** Nama otomatis dikapitalisasi pada awal kata (*Title Case*), dan Alamat otomatis menjadi huruf besar (*UPPERCASE*).
+* **Upload & Crop Foto:** Terintegrasi dengan `Cropper.js` untuk memastikan foto yang diunggah memiliki rasio standar pas foto **3:4**.
+* **Keamanan Akun:** Peringatan wajib ganti password jika masih menggunakan password bawaan (default).
+* **Responsive UI:** Tampilan ramah seluler (Mobile-friendly) sangat nyaman diakses via HP.
 
-### Login Siswa
-1.  Siswa menekan tombol **"Daftar Akun Sendiri"**.
-2.  Mengisi NISN, Nama, Jurusan, dan Password.
-3.  Login menggunakan data tersebut.
-
-### Format Sheet Database
-Jika Anda perlu mengedit manual, pastikan nama Sheet sesuai dengan kode jurusan di sistem:
-* `users`: Database akun login.
-* `tjkt`: Teknik Jaringan Komputer.
-* `perhotelan`: Akomodasi Perhotelan.
-* `tata_boga`: Kuliner.
-* `tata_busana`: Busana.
-* `tata_kecantikan`: Kecantikan.
+### 👨‍💼 Fitur Admin (Super Admin & Admin Jurusan)
+* **Dashboard Interaktif:** Menampilkan grafik statistik (Bar & Pie Chart) jumlah siswa per jurusan menggunakan `Chart.js`.
+* **Multi-Role Access:** * *Super Admin:* Memiliki akses penuh ke semua data jurusan.
+  * *Admin Jurusan:* Sistem otomatis mengunci akses agar admin hanya bisa melihat data siswanya sendiri.
+* **Manajemen User:** Reset password siswa, tambah akun, hapus akun, dan pindah jurusan siswa (khusus Super Admin).
+* **Export Laporan Premium:** Export data siswa ke file Google Spreadsheet baru, lengkap dengan **Foto Fisik (Thumbnail)** yang tertata rapi di dalam tabel laporan, siap cetak!
 
 ---
 
-## ⚠️ Troubleshooting & Catatan Keamanan
-
-1.  **Error "Unsafe attempt to initiate navigation"**:
-    * Ini wajar karena kebijakan keamanan browser Chrome/Safari terhadap iframe.
-    * **Solusi:** Aplikasi ini menggunakan tombol konfirmasi manual ("Klik Disini untuk Lanjut") saat login/logout. Jangan ubah logika ini.
-
-2.  **Angka 0 di depan NISN hilang**:
-    * Sistem sudah otomatis menambahkan tanda kutip (`'`) saat menyimpan data agar terbaca sebagai Teks.
-    * Jika input manual di Excel/Sheet, pastikan format kolom adalah **Plain Text**.
-
-3.  **Perubahan Kodingan**:
-    * Jika Anda mengubah kode `.gs` atau `.html`, Anda harus melakukan **Deploy Ulang** (Manage Deployments -> Edit -> New Version) agar perubahan tampil di user.
+## 🛠️ Teknologi yang Digunakan
+* **Backend & Server:** Google Apps Script (GAS)
+* **Database:** Google Sheets
+* **Storage:** Google Drive API
+* **Frontend:** HTML5, CSS3, Vanilla JavaScript
+* **UI Framework:** Bootstrap 5.1.3 & Bootstrap Icons
+* **Library Tambahan:** * [SweetAlert2](https://sweetalert2.github.io/) *(Pop-up Alerts)*
+  * [Cropper.js](https://fengyuanchen.github.io/cropperjs/) *(Image Cropping)*
+  * [Chart.js](https://www.chartjs.org/) *(Data Visualization)*
+  * [Animate.css](https://animate.style/) *(UI Animations)*
 
 ---
 
-## 👨‍💻 Pengembang
-Project ini dibuat sebagai dedikasi untuk **SMKN 3 Kendari**.
-* **Tech Stack:** Google Apps Script.
-* **Lisensi:** Open Source (Untuk kalangan pendidikan).
+## 📂 Struktur File Repository
+
+| Nama File | Deskripsi |
+| :--- | :--- |
+| `Code.gs` | *Entry point* server, HTTP GET Loader, dan Router API utama. |
+| `AuthService.gs` | Menangani Logika Login, Registrasi, dan Validasi Session Token. |
+| `AdminService.gs` | Menangani fungsi Dashboard, Manajemen User, CRUD Admin, dan Export Data. |
+| `StudentService.gs` | Menangani fungsi Profil Siswa, Simpan Biodata, Upload Foto, dan Ganti Password. |
+| `Utils.gs` | Helper kriptografi (Hashing MD5), Generator ID, dan operasi inti ke Spreadsheet. |
+| `index.html` | Kerangka awal SPA & Script penentu *Routing* halaman (Loading Screen). |
+| `login.html` | Antarmuka halaman Login dan Form Pendaftaran Siswa. |
+| `dashboard.html` | Antarmuka panel Siswa (Form pengisian biodata & foto). |
+| `admin.html` | Antarmuka panel Admin (Tabel data, manajemen user, grafik statistik). |
+
+---
+
+## 🗄️ Persiapan Database (Google Sheets)
+
+Buatlah sebuah file Google Sheets baru di Google Drive Anda, lalu buat *Sheet (Tab)* dengan nama-nama persis seperti berikut (Huruf kecil semua):
+
+1. **`users`**
+   * Baris 1 (Header): `NISN` | `Password` | `Role` | `Jurusan` | `Nama` | `Token`
+2. **`tjkt`**
+3. **`perhotelan`**
+4. **`tata_boga`**
+5. **`tata_busana`**
+6. **`tata_kecantikan`**
+   * *Header untuk Sheet Jurusan (Poin 2-6):* `NISN` | `Nama` | `Alamat` | `HP_Siswa` | `HP_Ortu` | `FotoID` | `Preview` | `TahunMasuk`
+
+---
+
+## 🚀 Panduan Instalasi & Deployment
+
+1. **Siapkan Spreadsheet:** Ikuti panduan pembuatan database di atas.
+2. **Buka Editor Script:** Pada Google Sheets, klik menu **Ekstensi > Apps Script**.
+3. **Salin Kode:** Buat file `.gs` (Script) dan `.html` sesuai dengan tabel struktur file di atas, lalu *copy-paste* semua kodenya.
+4. **Keamanan (Sangat Penting):** Buka file `AuthService.gs` dan ubah variabel `SESSION_SECRET` dengan kode/teks acak milik Anda sendiri.
+5. **Setup Akun Admin Awal:** * Buka file `Code.gs`.
+   * Hapus tanda komentar (`//`) pada blok fungsi `setupSystemAccounts()`.
+   * Pilih nama fungsi tersebut di *dropdown* menu atas, lalu klik tombol **Jalankan (Run)**.
+   * *Pastikan untuk mengembalikan tanda komentar (`//`) setelah sukses dijalankan.*
+6. **Deploy Aplikasi:**
+   * Klik tombol biru **Terapkan (Deploy) > Deployment Baru**.
+   * Pilih jenis: **Aplikasi Web (Web App)**.
+   * Setel Akses: **Siapa saja (Anyone)**.
+   * Klik **Terapkan**.
+   * Izinkan (Otorisasi) akses akun Google yang diminta.
+7. **Selesai:** Salin URL Web App yang diberikan. Aplikasi siap digunakan!
+
+---
+
+## ⚠️ Catatan Maintenance
+Jika Anda melakukan perubahan pada kode (HTML/JS/GS) di kemudian hari, Anda **WAJIB** melakukan Deploy Ulang agar perubahannya muncul:
+1. Klik **Terapkan > Kelola Penerapan**.
+2. Klik ikon pensil (Edit) pada versi yang sedang aktif.
+3. Pada dropdown Versi, pilih **Versi Baru**.
+4. Klik **Terapkan**. (Langkah ini menjaga agar URL Link aplikasi sekolah tidak berubah).
+
+---
+<p align="center">
+  <b>Dibuat untuk memenuhi tugas Kerja Praktik (KP) Tahun 2026.</b><br>
+  <i>Fakultas Teknik - Universitas Halu Oleo</i>
+</p>

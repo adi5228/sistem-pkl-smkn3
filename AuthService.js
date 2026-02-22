@@ -1,25 +1,30 @@
 /**
- * AuthService.gs (Disimpan sebagai .js untuk Repository GitHub)
- * * Deskripsi:
- * Layanan backend untuk menangani otentikasi pengguna, validasi sesi,
- * dan pendaftaran siswa baru ke dalam Google Spreadsheet.
- * * Dependencies:
- * - Google Apps Script (SpreadsheetApp, Utilities, LockService)
- * - Utils.gs (Custom utility functions)
- * * Catatan Deployment:
- * - Ubah ekstensi kembali menjadi .gs saat diupload ke Google Apps Script Editor.
- * - Ganti SESSION_SECRET dengan string acak yang aman.
+ * ============================================================================
+ * SISTEM INFORMASI PENDATAAN PKL SMKN 3 KENDARI
+ * ============================================================================
+ * File       : AuthService.gs
+ * Deskripsi  : 
+ * Modul ini menangani semua hal yang berkaitan dengan Autentikasi User.
+ * Mulai dari fungsi Login, Pembuatan & Validasi Token Sesi (Security), 
+ * hingga pendaftaran akun mandiri oleh siswa.
+ * ============================================================================
  */
 
 var AuthService = {
   
-  // --- KONFIGURASI ---
-  // [PENTING] Ganti ini dengan text acak rahasia saat deploy (JANGAN UPLOAD KEY ASLI KE GITHUB)
-  SESSION_SECRET: 'GANTI_DENGAN_TEXT_RAHASIA_ANDA', 
+  // --- KONFIGURASI KEAMANAN ---
+  // ⚠️ PENTING: JANGAN PERNAH PUSH SECRET KEY ASLI ANDA KE GITHUB!
+  // Ganti string di bawah ini dengan kombinasi acak yang panjang di environment production Anda.
+  // Contoh: 'x8s9d7f98s7df89s7d9f87s9d8f7s9d8f7s98d7f'
+  SESSION_SECRET: 'GANTI_DENGAN_KODE_RAHASIA_ANDA_DISINI', 
   
-  // ------------------------------------------------------------------------
-  // 1. FUNGSI LOGIN
-  // ------------------------------------------------------------------------
+  /**
+   * ==========================================================================
+   * 1. FUNGSI LOGIN
+   * ==========================================================================
+   * Menerima NISN dan Password, mencocokkannya dengan database.
+   * Jika cocok, membuat token UUID baru agar browser mengenali user.
+   */
   login: function(nisn, password) {
     try {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -28,31 +33,32 @@ var AuthService = {
       
       const data = sheet.getDataRange().getValues();
       
-      // Hash password yang diinput user untuk dicocokkan
+      // Hash password yang diinput user untuk dicocokkan dengan hash di database
       const inputHash = Utils.hashPassword(password);
       
-      // Loop cari user (Mulai baris ke-2 karena ada header)
+      // Looping cari user (Mulai i = 1 untuk melewati baris Header/Judul Tabel)
       for (let i = 1; i < data.length; i++) {
         const dbNisn = String(data[i][0]).trim();
         const dbPass = data[i][1];
         
-        // Cek kecocokan
+        // Cek kecocokan Username (NISN) dan Password
         if (dbNisn === String(nisn).trim() && dbPass === inputHash) {
           
-          // Generate Token Sesi Baru (UUID)
+          // Generate Token Sesi Baru yang unik menggunakan format UUID
           const token = Utilities.getUuid();
           
-          // Simpan token ke database (Kolom F / index 5)
+          // Simpan token tersebut ke database (Kolom F / index 5)
           sheet.getRange(i + 1, 6).setValue(token);
           
           return { 
             success: true, 
             sessionToken: token, 
-            role: data[i][2], // Role (ADMIN/SISWA)
-            jurusan: data[i][3] // Jurusan
+            role: data[i][2],    // Mengembalikan Role (ADMIN/SISWA)
+            jurusan: data[i][3]  // Mengembalikan Jurusan asal user
           };
         }
       }
+      // Jika looping selesai tapi tidak ada yang cocok
       return { success: false, error: 'NISN atau Password salah.' };
       
     } catch (e) {
@@ -60,11 +66,17 @@ var AuthService = {
     }
   },
 
-  // ------------------------------------------------------------------------
-  // 2. FUNGSI VALIDASI TOKEN (Cek apakah user sedang login)
-  // ------------------------------------------------------------------------
+
+  /**
+   * ==========================================================================
+   * 2. FUNGSI VALIDASI TOKEN (Keamanan API)
+   * ==========================================================================
+   * Setiap kali browser meminta data, ia akan mengirim token.
+   * Fungsi ini mengecek apakah token tersebut ada di dalam database.
+   * Jika ya, maka user dianggap sah. Jika tidak, permintaan ditolak.
+   */
   validateSessionToken: function(token) {
-    if (!token) return null;
+    if (!token) return null; // Tolak jika tidak ada token
     
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName('users');
@@ -84,27 +96,37 @@ var AuthService = {
         };
       }
     }
+    // Token tidak ditemukan (Mungkin sudah dihapus admin / expired)
     return null;
   },
 
-  // ------------------------------------------------------------------------
-  // 3. FUNGSI REGISTRASI MANDIRI (Siswa Daftar Sendiri)
-  // ------------------------------------------------------------------------
+
+  /**
+   * ==========================================================================
+   * 3. FUNGSI REGISTRASI MANDIRI (Siswa Daftar Sendiri)
+   * ==========================================================================
+   * Mengizinkan siswa mendaftarkan akunnya sendiri dari halaman Login.
+   * Menggunakan LockService agar jika ada 2 siswa mendaftar bersamaan, 
+   * data tidak bertumpuk / error.
+   */
   register: function(form) {
-    const lock = LockService.getScriptLock(); // Tambahkan Lock agar aman dari double input
+    // Kunci script eksekusi antrian selama max 5 detik
+    const lock = LockService.getScriptLock(); 
     try {
       lock.waitLock(5000); 
       
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const sheetUsers = ss.getSheetByName('users');
       
-      // Pastikan jurusan yang dipilih valid (Sheetnya ada)
+      // 1. Validasi Keberadaan Sheet Jurusan
+      // Pastikan jurusan yang dipilih siswa benar-benar ada database-nya
       const sheetJurusan = ss.getSheetByName(form.jurusan);
       if (!sheetJurusan) {
         return { success: false, error: 'Jurusan tidak ditemukan dalam sistem.' };
       }
 
-      // A. Cek Duplikasi NISN (Looping sheet users)
+      // 2. Cek Duplikasi NISN
+      // Mencegah 1 NISN dipakai untuk membuat 2 akun berbeda
       const dataUsers = sheetUsers.getDataRange().getValues();
       for (let i = 1; i < dataUsers.length; i++) {
         if (String(dataUsers[i][0]).trim() === String(form.nisn).trim()) {
@@ -112,29 +134,34 @@ var AuthService = {
         }
       }
 
-      // B. Simpan Akun Login ke sheet 'users'
+      // --- FORMATTING TEXT OTOMATIS ---
+      // Rapikan format nama menjadi Title Case (Huruf Besar di Awal Kata)
+      let rawNama = form.nama || "";
+      let formattedNama = String(rawNama).toLowerCase().replace(/\b\w/g, function(l) { return l.toUpperCase() });
+
+      // 3. Simpan Akun Login ke sheet 'users'
       const passHash = Utils.hashPassword(form.password);
       
       // Format Kolom Users: [NISN, PasswordHash, Role, Jurusan, Nama, Token]
-      // Note: NISN ditambah kutip satu (') agar tetap terbaca sebagai string di Google Sheet (menjaga angka 0 di depan)
+      // Tambahkan kutip (') di depan NISN agar tidak diubah formatnya oleh Google Sheets
       sheetUsers.appendRow([
         "'" + form.nisn, 
         passHash, 
         'SISWA', 
         form.jurusan, 
-        form.nama, 
+        formattedNama, 
         ''
       ]);
 
-      // C. Simpan Data Profil ke Sheet Jurusan
-      // Menggunakan input tahun dari form, default ke tahun sekarang jika kosong
+      // 4. Buat Baris Data Profil Baru di Sheet Jurusan
+      // Ambil input tahun dari form, jika tidak diisi, gunakan tahun saat ini
       const tahunPkl = form.tahun || new Date().getFullYear();
       
-      // Format Kolom Jurusan: [NISN, Nama, Alamat, HP Siswa, HP Ortu, FotoID, FotoPreview, Tahun]
+      // Format Kolom Jurusan: [NISN, Nama, Alamat, HP_Siswa, HP_Ortu, FotoID, FotoPreview, Tahun]
       sheetJurusan.appendRow([
         "'" + form.nisn, 
-        form.nama, 
-        "", // Alamat (Kosong)
+        formattedNama, 
+        "", // Alamat (Kosong dulu)
         "", // HP Siswa (Kosong)
         "", // HP Ortu (Kosong)
         "", // Foto ID (Kosong)
@@ -147,7 +174,7 @@ var AuthService = {
     } catch (e) {
       return { success: false, error: 'Register Error: ' + e.message };
     } finally {
-      lock.releaseLock(); // Lepaskan kunci
+      lock.releaseLock(); // Wajib lepaskan kunci agar orang lain bisa memproses data
     }
   }
 };

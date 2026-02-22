@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Admin Panel - SMKN 3 Kendari</title>
   
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,137 +18,238 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   
   <style>
+    /* --- DESIGN SYSTEM MODERN --- */
+    :root {
+        --primary-bg: #f8f9fa;
+        --sidebar-bg: #1e293b; /* Biru Gelap Modern */
+        --card-bg: #ffffff;
+        --primary-color: #3b82f6; /* Biru Cerah */
+        --text-dark: #334155;
+        --text-muted: #94a3b8;
+        --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
     body { 
-        background-color: #f4f6f9; 
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        background-color: var(--primary-bg); 
+        font-family: 'Poppins', sans-serif; 
         font-size: 0.9rem; 
-        padding-bottom: 80px; 
+        color: var(--text-dark);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        flex: 1; /* Mendorong footer ke bawah */
+        padding-bottom: 80px; /* Ruang untuk menu HP */
     }
     
-    /* Desktop Sidebar */
+    /* --- SIDEBAR (DESKTOP) --- */
     .sidebar { 
         min-height: 100vh; 
-        background: #2c3e50; 
+        background: var(--sidebar-bg); 
         color: white; 
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1); 
+        box-shadow: 2px 0 15px rgba(0,0,0,0.05); 
+        z-index: 100;
     }
-    .sidebar h5 { letter-spacing: 1px; color: #ecf0f1; }
+    .sidebar h5 { 
+        letter-spacing: 1px; 
+        color: #f1f5f9; 
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
     .nav-link { 
-        color: rgba(255,255,255,.7); 
+        color: #cbd5e1; 
         cursor: pointer; 
         padding: 12px 20px; 
-        transition: all 0.3s; 
-        border-radius: 0 25px 25px 0; 
-        margin-bottom: 5px; 
+        transition: all 0.3s ease; 
+        border-radius: 12px; 
+        margin-bottom: 8px; 
+        font-weight: 500;
     }
-    .nav-link:hover, .nav-link.active { 
+    .nav-link:hover { 
         color: white; 
-        background: rgba(255,255,255,0.15); 
-        padding-left: 25px; 
-        border-left: 4px solid #3498db; 
+        background: rgba(255,255,255,0.1); 
+        transform: translateX(5px);
+    }
+    .nav-link.active { 
+        color: white; 
+        background: var(--primary-color); 
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
     
-    /* Cards */
+    /* --- DASHBOARD CARDS --- */
     .welcome-card { 
-        background: linear-gradient(135deg, #3498db, #2980b9); 
-        color: white; border: none; border-radius: 15px; 
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); 
-        margin-bottom: 20px; 
+        background: linear-gradient(135deg, #2563eb, #1e40af); 
+        color: white; border: none; border-radius: 20px; 
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); 
+        margin-bottom: 30px; 
     }
     .header-logo { 
-        height: 65px; width: auto; 
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); 
-        background: rgba(255,255,255,0.1); 
-        padding: 5px; border-radius: 50%; 
+        height: 70px; width: auto; 
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); 
+        background: rgba(255,255,255,0.15); 
+        padding: 8px; border-radius: 50%; 
         transition: transform 0.3s; 
     }
-    .header-logo:hover { transform: scale(1.1); }
+    .header-logo:hover { transform: scale(1.1) rotate(5deg); }
     
     .stat-card { 
-        border: none; border-radius: 12px; 
-        background: white; 
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-        transition: transform 0.2s; height: 100%; 
+        border: none; border-radius: 16px; 
+        background: var(--card-bg); 
+        box-shadow: var(--shadow-soft); 
+        transition: transform 0.2s, box-shadow 0.2s; 
+        height: 100%; 
+        border-left: 5px solid transparent;
     }
+    .stat-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+    }
+    
     .chart-container { 
-        background: white; border-radius: 15px; 
-        padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: 100%; 
+        background: var(--card-bg); border-radius: 16px; 
+        padding: 25px; box-shadow: var(--shadow-soft); height: 100%; 
     }
     
-    .table-responsive { background: white; border-radius: 10px; overflow-x: auto; }
+    /* --- TABLES --- */
+    .card-table {
+        border-radius: 16px;
+        overflow: hidden;
+        border: none;
+        box-shadow: var(--shadow-soft);
+    }
+    .table thead th { 
+        background-color: #f8fafc; 
+        color: #64748b; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        font-size: 0.75rem; 
+        letter-spacing: 0.5px;
+        padding: 15px 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .table tbody td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
     .foto-cell img { 
-        width: 40px; height: 53px; object-fit: cover; 
-        border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); cursor: pointer; 
+        width: 45px; height: 60px; object-fit: cover; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        cursor: pointer; 
+        transition: transform 0.2s;
     }
+    .foto-cell img:hover { transform: scale(1.5); z-index: 10; position: relative; }
     
-    /* Crop Container */
+    /* --- CROPPER CONTAINER --- */
     .img-container {
         max-height: 400px;
-        background-color: #f7f7f7;
+        background-color: #f1f5f9;
         margin-bottom: 10px;
-        border: 1px dashed #ccc;
-        border-radius: 8px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
         overflow: hidden;
         display: none; 
     }
     .img-container img { max-width: 100%; display: block; }
 
-    /* Mobile Bottom Nav */
+    /* --- MOBILE BOTTOM NAV --- */
+    .mobile-nav {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid #e5e7eb;
+    }
     .bottom-nav-btn {
-        color: #6c757d;
+        color: #9ca3af;
         text-decoration: none;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 5px;
-        font-size: 0.75rem;
+        padding: 8px;
+        font-size: 0.7rem;
         transition: color 0.2s;
+        border-radius: 8px;
     }
-    .bottom-nav-btn.active { color: #3498db; font-weight: bold; }
-    .bottom-nav-btn i { font-size: 1.4rem; margin-bottom: 2px; }
+    .bottom-nav-btn.active { color: var(--primary-color); font-weight: 600; background: #eff6ff; }
+    .bottom-nav-btn i { font-size: 1.3rem; margin-bottom: 2px; }
 
-    /* Responsive Tweaks */
+    /* --- FOOTER PREMIUM --- */
+    .premium-footer {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: #ffffff;
+        padding: 20px 0;
+        text-align: center;
+        width: 100%;
+        margin-top: auto; 
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        z-index: 1040; /* Di bawah mobile nav */
+    }
+    .footer-title {
+        font-weight: 600;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+    }
+    .footer-sub { font-size: 0.7rem; color: rgba(255, 255, 255, 0.8); }
+    .heart-beat { color: #ff4757; display: inline-block; animation: heartbeat 1.5s infinite; }
+    
+    @keyframes heartbeat {
+        0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); }
+        45% { transform: scale(1.3); } 100% { transform: scale(1); }
+    }
+
+    /* --- RESPONSIVE TWEAKS --- */
     @media (max-width: 768px) { 
-        .header-logo { height: 45px; } 
-        h2 { font-size: 1.3rem; } 
-        .welcome-card { padding: 10px; }
+        .header-logo { height: 50px; } 
+        h2 { font-size: 1.4rem; } 
+        .welcome-card { padding: 5px; }
         .sidebar { display: none !important; } 
         .col-md-10 { padding: 15px !important; }
         .stat-card h3 { font-size: 1.5rem; }
+        .premium-footer { padding-bottom: 80px; } /* Hindari menu mobile */
     }
   </style>
 </head>
 <body>
 
-<div class="container-fluid p-0">
-  <div class="row g-0">
+<div class="container-fluid p-0 d-flex flex-column min-vh-100">
+  <div class="row g-0 flex-grow-1">
     
-    <div class="col-md-2 sidebar p-3 d-none d-md-block">
-      <h5 class="mb-4 text-center fw-bold py-3 border-bottom border-secondary">ADMIN PKL</h5>
-      <div id="adminBadge" class="text-center mb-3 badge bg-secondary w-100 p-2" style="display:none;">Loading...</div>
+    <div class="col-md-2 sidebar p-4 d-none d-md-block">
+      <h5 class="mb-4 text-center">ADMIN PANEL</h5>
+      <div id="adminBadge" class="text-center mb-4 badge bg-secondary w-100 p-2 shadow-sm" style="display:none; font-weight: 500;">Loading...</div>
+      
       <ul class="nav flex-column">
-        <li class="nav-item"><a class="nav-link active" onclick="switchTab('dashboard')"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" onclick="switchTab('data')"><i class="bi bi-people-fill me-2"></i> Data Siswa</a></li>
-        <li class="nav-item" id="menuUsers"><a class="nav-link" onclick="switchTab('users')"><i class="bi bi-person-badge-fill me-2"></i> User Admin</a></li>
-        <li class="nav-item mt-3 border-top border-secondary pt-3"><a class="nav-link" onclick="openAdminProfile()"><i class="bi bi-gear-fill me-2"></i> Pengaturan</a></li>
-        <li class="nav-item"><a class="nav-link text-danger fw-bold" onclick="logout()"><i class="bi bi-box-arrow-left me-2"></i> Logout</a></li>
+        <li class="nav-item"><a class="nav-link active" onclick="switchTab('dashboard')"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="switchTab('data')"><i class="bi bi-people-fill me-3"></i>Data Siswa</a></li>
+        <li class="nav-item" id="menuUsers"><a class="nav-link" onclick="switchTab('users')"><i class="bi bi-person-badge-fill me-3"></i>Manajemen User</a></li>
+        
+        <li class="nav-item mt-4 pt-4 border-top border-secondary" style="border-color: rgba(255,255,255,0.1)!important;">
+            <a class="nav-link" onclick="openAdminProfile()"><i class="bi bi-gear-fill me-3"></i>Pengaturan Akun</a>
+        </li>
+        <li class="nav-item"><a class="nav-link text-danger fw-bold" onclick="logout()"><i class="bi bi-box-arrow-left me-3"></i>Logout Sistem</a></li>
       </ul>
     </div>
 
-    <div class="col-md-10 p-3 p-md-4">
+    <div class="col-md-10 p-3 p-md-4 d-flex flex-column main-content">
       
-      <div id="tab-dashboard">
+      <div id="tab-dashboard" class="flex-grow-1">
         <div class="card welcome-card">
             <div class="card-body p-3 p-md-4">
-                <div class="d-flex align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center justify-content-between gap-3">
                     <img src="https://drive.google.com/thumbnail?id=1WB04Opaj-mN0nD0vLheD0FL2VuQ3OD5q&sz=w200" class="header-logo" alt="Sultra">
                     <div class="text-center flex-grow-1">
-                        <h2 class="fw-bold mb-0">Dashboard</h2>
+                        <h2 class="fw-bold mb-1">Dashboard Utama</h2>
                         <p class="mb-2 opacity-75 small text-uppercase letter-spacing-1 d-none d-sm-block">Sistem Informasi PKL SMKN 3 Kendari</p>
                         <p class="mb-2 opacity-75 small text-uppercase letter-spacing-1 d-block d-sm-none" style="font-size:0.7rem">SMKN 3 Kendari</p>
-                        <div class="bg-white text-primary d-inline-block px-4 py-1 rounded-pill shadow-sm mt-1">
+                        <div class="bg-white text-primary d-inline-block px-4 py-2 rounded-pill shadow mt-2">
                             <span class="fw-bold h4 m-0 me-2" id="totalSiswaBig">0</span>
-                            <small class="fw-bold text-uppercase" style="font-size: 0.7rem;">Siswa</small>
+                            <small class="fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">Total Siswa</small>
                         </div>
                     </div>
                     <img src="https://drive.google.com/thumbnail?id=1k4CSzwMHage8h4jJSXpZFkyA1TiogD3j&sz=w200" class="header-logo" alt="SMKN 3">
@@ -153,11 +257,11 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="text-secondary fw-bold m-0"><i class="bi bi-bar-chart-line-fill me-2"></i>Grafik Data</h5>
-            <div class="d-flex align-items-center bg-white px-3 py-2 rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="text-dark fw-bold m-0"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Statistik Data</h5>
+            <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
                 <label class="fw-bold me-2 small text-muted d-none d-sm-block">Filter Tahun:</label>
-                <select id="dashboardYear" class="form-select form-select-sm border-primary fw-bold" style="width: auto;" onchange="loadStats()">
+                <select id="dashboardYear" class="form-select form-select-sm border-0 bg-transparent fw-bold text-primary" style="width: auto; cursor: pointer;" onchange="loadStats()">
                     <option value="">Semua</option>
                 </select>
             </div>
@@ -166,121 +270,130 @@
         <div class="row mb-4 g-3">
             <div class="col-md-8">
                 <div class="chart-container">
-                    <h6 class="text-secondary fw-bold mb-3">SISWA PER JURUSAN</h6>
+                    <h6 class="text-muted fw-bold mb-3 small text-uppercase">Siswa Per Jurusan</h6>
                     <canvas id="barChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="chart-container">
-                    <h6 class="text-secondary fw-bold mb-3">KOMPOSISI</h6>
+                    <h6 class="text-muted fw-bold mb-3 small text-uppercase">Komposisi</h6>
                     <canvas id="pieChart" style="max-height: 250px;"></canvas>
                 </div>
             </div>
         </div>
 
-        <h5 class="text-secondary fw-bold mb-3">Rincian Data</h5>
-        <div class="row g-2" id="statsContainer">
-           <div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div><p>Memuat data...</p></div>
+        <h5 class="text-dark fw-bold mb-3">Rincian Per Jurusan</h5>
+        <div class="row g-3" id="statsContainer">
+           <div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted small">Memuat data...</p></div>
         </div>
       </div>
 
-      <div id="tab-data" style="display:none;">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          <h3 class="fw-bold text-secondary m-0">Data Siswa</h3>
+      <div id="tab-data" style="display:none;" class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <h3 class="fw-bold text-dark m-0">Data Siswa</h3>
           
-          <div class="row g-2 align-items-center w-100 w-md-auto">
+          <div class="row g-2 align-items-center w-100 w-md-auto bg-white p-2 rounded-3 shadow-sm border">
              <div class="col-6 col-md-auto">
-                 <select id="selectJurusan" class="form-select form-select-sm shadow-sm" onchange="loadYearsAndData()">
+                 <select id="selectJurusan" class="form-select form-select-sm border-0 bg-light fw-bold" onchange="loadYearsAndData()">
                    <option value="tjkt">TJKT</option><option value="perhotelan">Perhotelan</option><option value="tata_boga">Tata Boga</option><option value="tata_busana">Tata Busana</option><option value="tata_kecantikan">Tata Kecantikan</option>
                  </select>
              </div>
              <div class="col-6 col-md-auto">
-                 <select id="selectTahun" class="form-select form-select-sm shadow-sm" onchange="loadDataJurusan()"><option value="">Semua Thn</option></select>
+                 <select id="selectTahun" class="form-select form-select-sm border-0 bg-light fw-bold" onchange="loadDataJurusan()"><option value="">Semua Thn</option></select>
              </div>
              <div class="col-12 col-md-auto">
-                 <div class="input-group input-group-sm shadow-sm">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" id="searchSiswa" class="form-control border-start-0" placeholder="Cari Siswa..." onkeyup="filterTable('searchSiswa', 'tableBody')">
+                 <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="searchSiswa" class="form-control border-0 bg-light" placeholder="Cari Siswa..." onkeyup="filterTable('searchSiswa', 'tableBody')">
                  </div>
              </div>
              <div class="col-12 col-md-auto d-grid">
-                 <button class="btn btn-primary btn-sm shadow-sm" onclick="handleExportSheet()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+                 <button class="btn btn-primary btn-sm fw-bold px-3" onclick="handleExportSheet()"><i class="bi bi-file-earmark-excel me-1"></i> Export Data</button>
              </div>
           </div>
         </div>
         
-        <div class="card shadow-sm border-0">
+        <div class="card card-table shadow-sm">
           <div class="card-body p-0 table-responsive">
-            <table class="table table-hover align-middle mb-0 table-sm table-striped">
-              <thead class="bg-dark text-white text-nowrap">
-                <tr><th class="ps-3 py-2">Foto</th><th>NISN</th><th>Nama</th><th>Tahun</th><th>HP Siswa</th><th>HP Ortu</th><th>Alamat</th><th class="text-center">Aksi</th></tr>
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr><th class="ps-4 py-3">Foto</th><th>NISN</th><th>Nama</th><th>Tahun</th><th>HP Siswa</th><th>HP Ortu</th><th>Alamat</th><th class="text-center">Aksi</th></tr>
               </thead>
-              <tbody id="tableBody"><tr><td colspan="8" class="text-center p-5 text-muted">Pilih jurusan...</td></tr></tbody>
+              <tbody id="tableBody"><tr><td colspan="8" class="text-center p-5 text-muted">Pilih jurusan untuk melihat data.</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <div id="tab-users" style="display:none;">
-        <h3 class="fw-bold mb-4 text-secondary">Manajemen User</h3>
+      <div id="tab-users" style="display:none;" class="flex-grow-1">
+        <h3 class="fw-bold mb-4 text-dark">Manajemen User</h3>
         <div class="row">
+          
           <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0 sticky-top" style="top: 20px; z-index: 1;">
-              <div class="card-header bg-primary text-white fw-bold"><i class="bi bi-person-plus-fill me-2"></i> Tambah Akun</div>
+              <div class="card-header bg-white py-3 border-bottom">
+                  <h6 class="m-0 fw-bold text-primary"><i class="bi bi-person-plus-fill me-2"></i> Tambah Akun Baru</h6>
+              </div>
               <div class="card-body p-4">
                 <form onsubmit="handleCreateUser(event)">
-                  <div class="mb-3"><label class="form-label fw-bold">NISN</label><input type="text" id="newNisn" class="form-control" required placeholder="Login User"></div>
-                  <div class="mb-3"><label class="form-label fw-bold">Nama</label><input type="text" id="newNama" class="form-control" required placeholder="Nama Lengkap"></div>
+                  <div class="mb-3"><label class="form-label fw-bold small text-muted">NISN / Username</label><input type="text" id="newNisn" class="form-control bg-light" required placeholder="Contoh: 00567123"></div>
+                  <div class="mb-3"><label class="form-label fw-bold small text-muted">Nama Lengkap</label><input type="text" id="newNama" class="form-control bg-light" required placeholder="Nama Siswa"></div>
                   
                   <div class="mb-3">
-                      <label class="form-label fw-bold">Tahun PKL</label>
-                      <input type="number" id="newTahun" class="form-control" required placeholder="Contoh: 2026" value="2026">
+                      <label class="form-label fw-bold small text-muted">Tahun PKL</label>
+                      <input type="number" id="newTahun" class="form-control bg-light" required placeholder="Contoh: 2026" value="2026">
                   </div>
 
-                  <div class="mb-3"><label class="form-label fw-bold">Password Default</label><input type="text" id="newPass" class="form-control" value="123456" required></div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold">Jurusan</label>
-                    <select id="newJurusan" class="form-select">
+                  <div class="mb-3"><label class="form-label fw-bold small text-muted">Password Default</label><input type="text" id="newPass" class="form-control bg-light" value="123456" required></div>
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">Pilih Jurusan</label>
+                    <select id="newJurusan" class="form-select bg-light">
                        <option value="tjkt">TJKT</option><option value="perhotelan">Perhotelan</option><option value="tata_boga">Tata Boga</option><option value="tata_busana">Tata Busana</option><option value="tata_kecantikan">Tata Kecantikan</option>
                     </select>
                   </div>
-                  <div class="d-grid"><button type="submit" id="btnCreate" class="btn btn-primary fw-bold">Simpan</button></div>
+                  <div class="d-grid"><button type="submit" id="btnCreate" class="btn btn-primary fw-bold py-2 shadow-sm">SIMPAN USER</button></div>
                 </form>
               </div>
             </div>
           </div>
 
           <div class="col-md-8">
-              <div class="card shadow-sm border-0">
-                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-                  <span>Daftar User Terdaftar</span>
+              <div class="card card-table shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                  <h6 class="m-0 fw-bold text-dark">Daftar Akun Terdaftar</h6>
                   <div class="d-flex gap-2">
-                      <div class="input-group input-group-sm" style="max-width: 150px;">
-                        <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                        <input type="text" id="searchUser" class="form-control" placeholder="Cari..." onkeyup="filterTable('searchUser', 'userTableBody')">
+                      <div class="input-group input-group-sm" style="max-width: 200px;">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchUser" class="form-control bg-light border-0" placeholder="Cari user..." onkeyup="filterTable('searchUser', 'userTableBody')">
                       </div>
-                      <button class="btn btn-sm btn-outline-secondary" onclick="loadUsersList()"><i class="bi bi-arrow-clockwise"></i></button>
+                      <button class="btn btn-sm btn-light border" onclick="loadUsersList()"><i class="bi bi-arrow-clockwise"></i></button>
                   </div>
                 </div>
                 <div class="card-body p-0 table-responsive user-table-container">
-                  <table class="table table-striped table-hover mb-0 table-sm">
-                    <thead class="bg-light sticky-top text-nowrap" style="top: 0; z-index: 2;">
-                      <tr><th class="ps-3">NISN</th><th>Nama</th><th>Jurusan</th><th>Role</th><th class="text-center">Aksi</th></tr>
+                  <table class="table table-hover mb-0 align-middle">
+                    <thead class="sticky-top" style="top: 0; z-index: 2;">
+                      <tr><th class="ps-4">NISN</th><th>Nama</th><th>Jurusan</th><th>Role</th><th class="text-center">Aksi</th></tr>
                     </thead>
-                    <tbody id="userTableBody"><tr><td colspan="5" class="text-center p-4">Memuat data...</td></tr></tbody>
+                    <tbody id="userTableBody"><tr><td colspan="5" class="text-center p-4 text-muted">Memuat data...</td></tr></tbody>
                   </table>
                 </div>
               </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
-<div class="d-md-none fixed-bottom bg-white border-top d-flex justify-content-around py-2 shadow-lg" style="z-index: 1050;">
+<footer class="premium-footer">
+  <div class="footer-title">KP INFORMATIKA UHO 2026</div>
+  <div class="footer-sub">Dibuat dengan <span class="heart-beat">❤</span> untuk SMKN 3 Kendari</div>
+</footer>
+
+<div class="d-md-none fixed-bottom mobile-nav d-flex justify-content-around py-2 shadow-lg" style="z-index: 1050;">
     <a onclick="switchTab('dashboard')" class="bottom-nav-btn active" id="btn-nav-dashboard">
-        <i class="bi bi-grid-1x2-fill"></i><span>Home</span>
+        <i class="bi bi-grid-fill"></i><span>Home</span>
     </a>
     <a onclick="switchTab('data')" class="bottom-nav-btn" id="btn-nav-data">
         <i class="bi bi-people-fill"></i><span>Siswa</span>
@@ -298,23 +411,23 @@
 
 <div class="modal fade" id="editJurusanModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Ganti Jurusan Siswa</h5>
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-info text-white py-3 border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-arrow-left-right me-2"></i>Pindah Jurusan Siswa</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <form onsubmit="handleSubmitEditJurusan(event)">
             <input type="hidden" id="editOldJurusan">
-            <div class="mb-3"><label class="form-label fw-bold">NISN</label><input type="text" id="editNisn" class="form-control bg-light" readonly></div>
-            <div class="mb-3"><label class="form-label fw-bold">Nama Siswa</label><input type="text" id="editNama" class="form-control bg-light" readonly></div>
-            <div class="mb-3">
-                <label class="form-label fw-bold text-primary">Pindah ke Jurusan:</label>
-                <select id="selectNewJurusan" class="form-select border-primary" required>
+            <div class="mb-3"><label class="form-label fw-bold small text-muted">NISN</label><input type="text" id="editNisn" class="form-control bg-light fw-bold" readonly></div>
+            <div class="mb-3"><label class="form-label fw-bold small text-muted">Nama Siswa</label><input type="text" id="editNama" class="form-control bg-light fw-bold" readonly></div>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-dark">Pindahkan Ke:</label>
+                <select id="selectNewJurusan" class="form-select border-info" required>
                     <option value="tjkt">TJKT</option><option value="perhotelan">Perhotelan</option><option value="tata_boga">Tata Boga</option><option value="tata_busana">Tata Busana</option><option value="tata_kecantikan">Tata Kecantikan</option>
                 </select>
             </div>
-            <div class="d-grid"><button type="submit" class="btn btn-info text-white fw-bold">SIMPAN PERUBAHAN</button></div>
+            <div class="d-grid"><button type="submit" class="btn btn-info text-white fw-bold py-2">SIMPAN PERPINDAHAN</button></div>
         </form>
       </div>
     </div>
@@ -323,52 +436,53 @@
 
 <div class="modal fade" id="editSiswaModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> 
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title"><i class="bi bi-person-lines-fill me-2"></i>Edit Siswa</h5>
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white py-3 border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Edit Data Siswa</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <form onsubmit="handleSaveSiswa(event)">
             <input type="hidden" id="esJurusan">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold small">NISN</label>
-                    <input type="text" id="esNisn" class="form-control bg-light" readonly>
+                    <label class="form-label fw-bold small text-muted">NISN</label>
+                    <input type="text" id="esNisn" class="form-control bg-light fw-bold" readonly>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold small">Nama Lengkap</label>
+                    <label class="form-label fw-bold small text-muted">Nama Lengkap</label>
                     <input type="text" id="esNama" class="form-control" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold small">Tahun PKL</label>
+                    <label class="form-label fw-bold small text-muted">Tahun PKL</label>
                     <input type="number" id="esTahun" class="form-control" required placeholder="Contoh: 2026">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold small">HP Siswa</label>
+                    <label class="form-label fw-bold small text-muted">HP Siswa</label>
                     <input type="text" id="esHpSiswa" class="form-control" placeholder="08...">
                 </div>
             </div>
             <div class="mb-3">
-                <label class="form-label fw-bold small">Alamat Lengkap</label>
+                <label class="form-label fw-bold small text-muted">Alamat Lengkap</label>
                 <textarea id="esAlamat" class="form-control" rows="2"></textarea>
             </div>
             <div class="mb-3">
-                <label class="form-label fw-bold small">HP Orang Tua</label>
+                <label class="form-label fw-bold small text-muted">HP Orang Tua</label>
                 <input type="text" id="esHpOrtu" class="form-control" placeholder="08...">
             </div>
-            <div class="card bg-light border-0">
+            
+            <div class="card bg-light border-0 rounded-3">
                 <div class="card-body">
-                    <label class="form-label fw-bold d-block small"><i class="bi bi-camera-fill me-2"></i>Sesuaikan Foto (3:4)</label>
+                    <label class="form-label fw-bold d-block small text-primary"><i class="bi bi-camera-fill me-2"></i>Ganti Foto Profil (Opsional)</label>
                     <div class="row align-items-center">
                         <div class="col-4 text-center mb-2">
-                            <img id="esFotoCurrent" src="" style="width: 80px; height: 106px; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background: #eee;">
+                            <img id="esFotoCurrent" src="" class="rounded shadow-sm" style="width: 80px; height: 106px; object-fit: cover; background: #fff;">
                         </div>
                         <div class="col-8">
                             <input type="file" id="esFotoUpload" class="form-control form-control-sm mb-2" accept="image/*" onchange="initCropper(this)">
-                            <div class="img-container" style="height: 250px;">
+                            <div class="img-container shadow-sm" style="height: 250px;">
                                 <img id="imageToCrop" src="">
                             </div>
                         </div>
@@ -376,7 +490,7 @@
                 </div>
             </div>
             <div class="d-grid mt-4">
-                <button type="submit" id="btnSaveSiswa" class="btn btn-primary fw-bold py-2">SIMPAN</button>
+                <button type="submit" id="btnSaveSiswa" class="btn btn-primary fw-bold py-2 shadow-sm">SIMPAN PERUBAHAN</button>
             </div>
         </form>
       </div>
@@ -386,27 +500,27 @@
 
 <div class="modal fade" id="adminProfileModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title"><i class="bi bi-shield-lock-fill me-2"></i>Profil Admin</h5>
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white py-3 border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Pengaturan Akun</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-         <div class="alert alert-warning small">
-             <i class="bi bi-exclamation-triangle-fill me-1"></i>
-             Jika Username/Password diubah, Anda harus login ulang.
+      <div class="modal-body p-4">
+         <div class="alert alert-warning small border-0 shadow-sm">
+             <i class="bi bi-info-circle-fill me-2"></i>
+             Jika Anda mengubah Username atau Password, Anda harus login ulang.
          </div>
          <form onsubmit="handleUpdateAdmin(event)">
              <div class="mb-3">
-                 <label class="form-label fw-bold">Username Login</label>
+                 <label class="form-label fw-bold small text-muted">Username Login</label>
                  <input type="text" id="adminNewUsername" class="form-control" required>
              </div>
-             <div class="mb-3">
-                 <label class="form-label fw-bold">Password Baru</label>
+             <div class="mb-4">
+                 <label class="form-label fw-bold small text-muted">Password Baru</label>
                  <input type="password" id="adminNewPassword" class="form-control" placeholder="Kosongkan jika tidak ingin ganti">
              </div>
              <div class="d-grid">
-                 <button type="submit" id="btnUpdateAdmin" class="btn btn-dark fw-bold">SIMPAN PERUBAHAN</button>
+                 <button type="submit" id="btnUpdateAdmin" class="btn btn-dark fw-bold py-2">SIMPAN PERUBAHAN</button>
              </div>
          </form>
       </div>
@@ -426,6 +540,9 @@
   let currentAdminNisn = ''; 
   let cropper;
 
+  // --- INIT KETIKA HALAMAN DIBUKA ---
+  window.onload = function() { initAdmin(); };
+
   function initAdmin() {
       const token = localStorage.getItem('sessionToken');
       if(!token) return logout();
@@ -440,14 +557,17 @@
           const badge = document.getElementById('adminBadge');
           badge.style.display = 'block';
 
+          // Set UI berdasarkan Role Admin
           if(currentAdminJurusan === '-') {
               badge.innerText = "SUPER ADMIN";
-              badge.className = "text-center mb-3 badge bg-danger w-100 p-2";
+              badge.className = "text-center mb-4 badge bg-danger w-100 p-2 shadow-sm";
           } else {
               let niceName = currentAdminJurusan.toUpperCase().replace(/_/g, ' ');
+              if(niceName === 'TKJ') niceName = 'TJKT';
               badge.innerText = "ADMIN " + niceName;
-              badge.className = "text-center mb-3 badge bg-success w-100 p-2";
+              badge.className = "text-center mb-4 badge bg-success w-100 p-2 shadow-sm";
               
+              // Kunci Dropdown Jurusan
               const selectJur = document.getElementById('selectJurusan');
               const newJur = document.getElementById('newJurusan');
               selectJur.value = currentAdminJurusan;
@@ -460,20 +580,26 @@
       }).api('getDashboardData', { sessionToken: token });
   }
 
+  // --- NAVIGASI TAB ---
   function switchTab(tabName) {
+    // Sembunyikan semua tab
     ['dashboard', 'data', 'users'].forEach(t => document.getElementById('tab-' + t).style.display = 'none');
     
+    // Tampilkan tab yang dipilih
     if(document.getElementById('tab-' + tabName)) {
         document.getElementById('tab-' + tabName).style.display = 'block';
     }
     
+    // Update state menu Desktop
     document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
     if(event && event.currentTarget.classList.contains('nav-link')) event.currentTarget.classList.add('active');
     
+    // Update state menu Mobile
     document.querySelectorAll('.bottom-nav-btn').forEach(el => el.classList.remove('active'));
     const bottomBtn = document.getElementById('btn-nav-' + tabName);
     if(bottomBtn) bottomBtn.classList.add('active');
 
+    // Trigger Load Data sesuai Tab
     if(tabName === 'dashboard') loadStats();
     if(tabName === 'data') {
         if (currentAdminJurusan !== '-') { loadYearsAndData(); } else {
@@ -484,36 +610,28 @@
     if(tabName === 'users') loadUsersList(); 
   }
 
-  // --- LOGOUT AMAN (ANTI-SANDBOX) ---
+  // --- LOGOUT ---
   function logout() {
     Swal.fire({
       title: 'Keluar?',
-      text: "Sesi Anda akan berakhir.",
+      text: "Sesi Anda akan diakhiri.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Ya, Logout'
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#9ca3af',
+      confirmButtonText: 'Ya, Logout',
+      customClass: { popup: 'rounded-4' }
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.clear();
-        
-        // Ambil URL Aplikasi dan Redirect dengan metode window.open pada user gesture
         google.script.run.withSuccessHandler(url => {
-            Swal.fire({
-                title: 'Logout Berhasil',
-                text: 'Klik OK untuk kembali ke login.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                allowOutsideClick: false
-            }).then(() => {
-                window.open(url, '_top');
-            });
+            window.open(url, '_top');
         }).getAppUrl();
       }
     });
   }
 
+  // --- PENGATURAN AKUN ADMIN ---
   function openAdminProfile() {
       if(!adminProfileModal) adminProfileModal = new bootstrap.Modal(document.getElementById('adminProfileModal'));
       document.getElementById('adminNewUsername').value = currentAdminNisn;
@@ -538,6 +656,7 @@
       }).api('adminUpdateCredentials', { sessionToken: token, newUsername: newU, newPassword: newP });
   }
 
+  // --- LOAD DATA FILTER TAHUN ---
   function loadYearsAndData() {
       const token = localStorage.getItem('sessionToken');
       let jurusan = document.getElementById('selectJurusan').value;
@@ -554,6 +673,7 @@
       }).api('getAvailableYears', { jurusan: jurusan, sessionToken: token });
   }
 
+  // --- LOAD TABEL SISWA ---
   function loadDataJurusan() {
     const token = localStorage.getItem('sessionToken');
     let jurusan = document.getElementById('selectJurusan').value;
@@ -566,7 +686,7 @@
     if (!jurusan || jurusan === "") { tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-muted">Silakan pilih jurusan.</td></tr>'; return; }
 
     let displayJurusan = jurusan.toUpperCase().replace(/_/g, ' ');
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center p-5"><div class="spinner-border text-primary mb-2"></div><br>Mengambil data <b>' + displayJurusan + '</b>...</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center p-5"><div class="spinner-border text-primary mb-3"></div><h6 class="text-muted">Mengambil data <b>${displayJurusan}</b>...</h6></td></tr>`;
     document.getElementById('searchSiswa').value = ''; 
     
     google.script.run.withSuccessHandler(res => {
@@ -574,14 +694,29 @@
          if(res.students.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="text-center p-5 text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i>Belum ada data siswa.</td></tr>'; return; }
          let rows = '';
          res.students.forEach(s => {
-            let img = s.foto_url ? `<a href="${s.foto_url}" target="_blank"><img src="${s.foto_url}"></a>` : '<span class="badge bg-secondary">No Foto</span>';
-            rows += `<tr><td class="foto-cell ps-3">${img}</td><td class="font-monospace fw-bold">${s.nisn}</td><td class="fw-bold text-secondary">${s.nama}</td><td><span class="badge bg-info text-dark">${s.tahun_pkl || '-'}</span></td><td>${s.hp_siswa}</td><td class="text-danger">${s.hp_ortu}</td><td class="small text-truncate" style="max-width:150px">${s.alamat}</td><td class="text-center"><div class="btn-group btn-group-sm"><button class="btn btn-primary" onclick="openEditSiswa('${s.nisn}', '${jurusan}')" title="Edit Lengkap"><i class="bi bi-pencil-fill"></i></button><button class="btn btn-outline-danger" onclick="confirmDelete('${s.nisn}', '${s.nama}', '${jurusan}')" title="Hapus"><i class="bi bi-trash"></i></button></div></td></tr>`;
+            let img = s.foto_url ? `<a href="${s.foto_url}" target="_blank"><img src="${s.foto_url}"></a>` : '<span class="badge bg-light text-muted border px-2 py-1">No Foto</span>';
+            rows += `<tr>
+                        <td class="foto-cell ps-4">${img}</td>
+                        <td class="font-monospace fw-bold text-dark">${s.nisn}</td>
+                        <td class="fw-bold text-primary">${s.nama}</td>
+                        <td><span class="badge bg-light text-dark border px-2 py-1">${s.tahun_pkl || '-'}</span></td>
+                        <td>${s.hp_siswa}</td>
+                        <td class="text-muted small">${s.hp_ortu}</td>
+                        <td class="small text-truncate text-muted" style="max-width:150px" title="${s.alamat}">${s.alamat}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm shadow-sm">
+                                <button class="btn btn-outline-primary" onclick="openEditSiswa('${s.nisn}', '${jurusan}')" title="Edit Lengkap"><i class="bi bi-pencil-fill"></i></button>
+                                <button class="btn btn-outline-danger" onclick="confirmDelete('${s.nisn}', '${s.nama}', '${jurusan}')" title="Hapus"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </td>
+                     </tr>`;
          });
          tbody.innerHTML = rows;
       } else { tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-danger">Error: ${res.error}</td></tr>`; }
     }).api('getAdminData', { jurusan: jurusan, tahun: tahun, sessionToken: token });
   }
 
+  // --- EDIT PROFIL SISWA OLEH ADMIN ---
   function openEditSiswa(nisn, jurusan) {
       if(!editSiswaModal) editSiswaModal = new bootstrap.Modal(document.getElementById('editSiswaModal'));
       const token = localStorage.getItem('sessionToken');
@@ -612,6 +747,7 @@
       }).api('adminGetStudentDetail', { sessionToken: token, nisn: nisn, jurusan: jurusan });
   }
 
+  // --- CROPPER DI MODAL EDIT SISWA ---
   function initCropper(input) {
       if (input.files && input.files[0]) {
           const file = input.files[0];
@@ -664,6 +800,7 @@
       } else { submitData(); }
   }
 
+  // --- LOAD DASHBOARD CHARTS ---
   function loadDashboardYears() {
       const token = localStorage.getItem('sessionToken');
       google.script.run.withSuccessHandler(years => {
@@ -681,55 +818,88 @@
     google.script.run.withSuccessHandler(res => {
        if(res.success) {
          let html = '';
-         const colors = ['#3498db', '#e74c3c', '#f1c40f', '#9b59b6', '#2ecc71'];
-         const bgColors = ['rgba(52, 152, 219, 0.2)', 'rgba(231, 76, 60, 0.2)', 'rgba(241, 196, 15, 0.2)', 'rgba(155, 89, 182, 0.2)', 'rgba(46, 204, 113, 0.2)'];
+         // Warna Tema Modern
+         const colors = ['#2563eb', '#dc2626', '#d97706', '#7c3aed', '#059669'];
+         const bgColors = ['#eff6ff', '#fef2f2', '#fffbeb', '#f5f3ff', '#ecfdf5'];
          let labels = []; let dataValues = []; let i = 0;
+         
          for (const [key, val] of Object.entries(res.stats)) {
             let label = key.toUpperCase().replace(/_/g, ' ');
             if(label === 'TKJ') label = 'TJKT';
             labels.push(label); dataValues.push(val);
-            html += `<div class="col-md-2 col-6 mb-3"><div class="stat-card p-3 text-center"><h3 class="fw-bold m-0" style="color: ${colors[i % 5]}">${val}</h3><small class="text-muted fw-bold" style="font-size:0.75rem">${label}</small></div></div>`;
+            
+            html += `<div class="col-md-2 col-6 mb-3">
+                        <div class="stat-card p-3 text-center" style="border-left-color: ${colors[i % 5]}">
+                            <h3 class="fw-bold m-0" style="color: ${colors[i % 5]}">${val}</h3>
+                            <small class="text-muted fw-bold" style="font-size:0.75rem">${label}</small>
+                        </div>
+                     </div>`;
             i++;
          }
          document.getElementById('totalSiswaBig').innerText = res.total;
          document.getElementById('statsContainer').innerHTML = html;
-         renderCharts(labels, dataValues, colors, bgColors);
+         renderCharts(labels, dataValues, colors);
        } else if(res.sessionExpired) logout();
     }).api('getAdminStats', { sessionToken: token, year: selectedYear });
   }
 
-  function renderCharts(labels, data, colors, bgColors) {
+  function renderCharts(labels, data, colors) {
+      // Bar Chart
       const ctxBar = document.getElementById('barChart').getContext('2d');
       if (barChartInstance) barChartInstance.destroy();
-      barChartInstance = new Chart(ctxBar, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Jumlah Siswa', data: data, backgroundColor: colors, borderRadius: 5 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+      barChartInstance = new Chart(ctxBar, { 
+          type: 'bar', 
+          data: { labels: labels, datasets: [{ label: 'Jumlah Siswa', data: data, backgroundColor: colors, borderRadius: 5 }] }, 
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } 
+      });
+      
+      // Pie Chart
       const ctxPie = document.getElementById('pieChart').getContext('2d');
       if (pieChartInstance) pieChartInstance.destroy();
-      pieChartInstance = new Chart(ctxPie, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } });
+      pieChartInstance = new Chart(ctxPie, { 
+          type: 'doughnut', 
+          data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, hoverOffset: 4 }] }, 
+          options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } 
+      });
   }
 
+  // --- MANAJEMEN USER ---
   function loadUsersList() {
     const token = localStorage.getItem('sessionToken');
     const tbody = document.getElementById('userTableBody');
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-3">Mengambil data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4">Mengambil data...</td></tr>';
     document.getElementById('searchUser').value = '';
+    
     google.script.run.withSuccessHandler(res => {
        if(res.success) {
           let rows = '';
           res.users.forEach(u => {
-             let roleBadge = u.role === 'ADMIN' ? '<span class="badge bg-danger">ADMIN</span>' : '<span class="badge bg-success">SISWA</span>';
-             let btnAksi = `
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-warning text-white" onclick="confirmResetPass('${u.nisn}', '${u.nama}')" title="Reset Password"><i class="bi bi-key-fill"></i></button>
-                    <button class="btn btn-light text-danger" onclick="confirmDelete('${u.nisn}', '${u.nama}', '${u.jurusan}')" title="Hapus"><i class="bi bi-trash"></i></button>
-                </div>`;
-             if(currentAdminJurusan === '-') {
-                 btnAksi = `<div class="btn-group btn-group-sm"><button class="btn btn-info text-white" onclick="openEditJurusan('${u.nisn}', '${u.nama}', '${u.jurusan}')" title="Ganti Jurusan"><i class="bi bi-pencil-square"></i></button>${btnAksi}</div>`;
-             }
-             if(u.role === 'ADMIN') btnAksi = '<span class="text-muted small">Protected</span>'; 
+             let roleBadge = u.role === 'ADMIN' ? '<span class="badge bg-danger rounded-pill px-3">ADMIN</span>' : '<span class="badge bg-success rounded-pill px-3">SISWA</span>';
              
-             let displayJurusan = u.jurusan.toUpperCase();
+             let btnAksi = `
+                <div class="btn-group btn-group-sm shadow-sm">
+                    <button class="btn btn-warning text-dark" onclick="confirmResetPass('${u.nisn}', '${u.nama}')" title="Reset Password"><i class="bi bi-key-fill"></i></button>
+                    <button class="btn btn-light text-danger border" onclick="confirmDelete('${u.nisn}', '${u.nama}', '${u.jurusan}')" title="Hapus"><i class="bi bi-trash-fill"></i></button>
+                </div>`;
+                
+             // Super admin bisa ganti jurusan
+             if(currentAdminJurusan === '-') {
+                 btnAksi = `<div class="btn-group btn-group-sm shadow-sm"><button class="btn btn-info text-white" onclick="openEditJurusan('${u.nisn}', '${u.nama}', '${u.jurusan}')" title="Ganti Jurusan"><i class="bi bi-arrow-left-right"></i></button>${btnAksi}</div>`;
+             }
+             
+             // Kunci hapus sesama admin
+             if(u.role === 'ADMIN') btnAksi = '<span class="text-muted small fw-bold"><i class="bi bi-shield-lock-fill text-warning"></i> Protected</span>'; 
+             
+             let displayJurusan = u.jurusan.toUpperCase().replace(/_/g, ' ');
              if (displayJurusan === 'TKJ') displayJurusan = 'TJKT';
-             rows += `<tr><td class="ps-3 font-monospace">${u.nisn}</td><td class="fw-bold">${u.nama}</td><td>${displayJurusan}</td><td>${roleBadge}</td><td class="text-center">${btnAksi}</td></tr>`;
+             
+             rows += `<tr>
+                        <td class="ps-4 font-monospace fw-bold">${u.nisn}</td>
+                        <td class="fw-bold text-primary">${u.nama}</td>
+                        <td class="small text-muted fw-bold">${displayJurusan}</td>
+                        <td>${roleBadge}</td>
+                        <td class="text-center">${btnAksi}</td>
+                      </tr>`;
           });
           tbody.innerHTML = rows;
        }
@@ -740,7 +910,7 @@
     e.preventDefault();
     const token = localStorage.getItem('sessionToken');
     const btn = document.getElementById('btnCreate');
-    btn.disabled = true; btn.innerHTML = 'Wait...';
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
     
     let jurusan = document.getElementById('newJurusan').value;
     if (currentAdminJurusan !== '-') jurusan = currentAdminJurusan;
@@ -754,18 +924,35 @@
     };
     
     google.script.run.withSuccessHandler(res => {
-      btn.disabled = false; btn.innerHTML = 'Simpan';
-      if(res.success) { Swal.fire('Sukses', 'User dibuat', 'success'); document.getElementById('newNisn').value = ''; document.getElementById('newNama').value = ''; loadStats(); loadUsersList(); }
+      btn.disabled = false; btn.innerHTML = 'SIMPAN USER';
+      if(res.success) { 
+          Swal.fire('Sukses', 'User berhasil ditambahkan', 'success'); 
+          document.getElementById('newNisn').value = ''; 
+          document.getElementById('newNama').value = ''; 
+          loadStats(); loadUsersList(); 
+      }
       else Swal.fire('Gagal', res.error, 'error');
     }).api('adminCreateUser', { ...formData, sessionToken: token });
   }
 
   function confirmDelete(nisn, nama, jurusan) {
-      Swal.fire({title: 'Hapus?', text: `Hapus data ${nama}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33'}).then((result) => {
+      Swal.fire({
+          title: 'Hapus Permanen?', 
+          html: `Anda yakin ingin menghapus data <b>${nama}</b>?<br>Data tidak dapat dikembalikan.`, 
+          icon: 'warning', 
+          showCancelButton: true, 
+          confirmButtonColor: '#ef4444'
+      }).then((result) => {
         if (result.isConfirmed) {
            const token = localStorage.getItem('sessionToken');
+           Swal.fire({title: 'Menghapus...', didOpen: () => Swal.showLoading()});
            google.script.run.withSuccessHandler(res => {
-              if(res.success) { Swal.fire('Terhapus', res.message, 'success'); if(document.getElementById('tab-data').style.display === 'block') loadDataJurusan(); if(document.getElementById('tab-users').style.display === 'block') loadUsersList(); loadStats(); }
+              if(res.success) { 
+                  Swal.fire('Terhapus', res.message, 'success'); 
+                  if(document.getElementById('tab-data').style.display === 'block') loadDataJurusan(); 
+                  if(document.getElementById('tab-users').style.display === 'block') loadUsersList(); 
+                  loadStats(); 
+              }
               else Swal.fire('Gagal', res.error, 'error');
            }).api('adminDeleteUser', { sessionToken: token, nisn: nisn, jurusan: jurusan });
         }
@@ -773,19 +960,31 @@
   }
 
   function confirmResetPass(nisn, nama) {
-      Swal.fire({title: 'Reset Password?', text: `Password untuk ${nama} akan kembali menjadi 123456.`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ffc107', confirmButtonText: 'Ya, Reset'}).then((result) => {
+      Swal.fire({
+          title: 'Reset Password?', 
+          text: `Password untuk ${nama} akan dikembalikan menjadi 123456.`, 
+          icon: 'question', 
+          showCancelButton: true, 
+          confirmButtonColor: '#f59e0b', 
+          confirmButtonText: 'Ya, Reset'
+      }).then((result) => {
         if (result.isConfirmed) {
            const token = localStorage.getItem('sessionToken');
-           google.script.run.withSuccessHandler(res => { if(res.success) Swal.fire('Berhasil', res.message, 'success'); else Swal.fire('Gagal', res.error, 'error'); }).api('adminResetPassword', { sessionToken: token, nisn: nisn });
+           google.script.run.withSuccessHandler(res => { 
+               if(res.success) Swal.fire('Berhasil', res.message, 'success'); 
+               else Swal.fire('Gagal', res.error, 'error'); 
+           }).api('adminResetPassword', { sessionToken: token, nisn: nisn });
         }
       });
   }
 
+  // --- FITUR SEARCH PADA TABEL ---
   function filterTable(inputId, tableBodyId) {
       const input = document.getElementById(inputId).value.toLowerCase();
       const tbody = document.getElementById(tableBodyId);
       const rows = tbody.getElementsByTagName('tr');
       let visibleCount = 0; let totalCols = 5;
+      
       const oldNoData = document.getElementById('no-data-' + tableBodyId);
       if (oldNoData) oldNoData.remove();
 
@@ -797,13 +996,15 @@
           if (text.includes(input)) { row.style.display = ''; visibleCount++; } 
           else { row.style.display = 'none'; }
       }
+      
       if (visibleCount === 0 && input !== '') {
           const newRow = tbody.insertRow();
           newRow.id = 'no-data-' + tableBodyId;
-          newRow.innerHTML = `<td colspan="${totalCols}" class="text-center text-muted py-4 fw-bold"><i class="bi bi-search me-2"></i> Data "${document.getElementById(inputId).value}" tidak ditemukan</td>`;
+          newRow.innerHTML = `<td colspan="${totalCols}" class="text-center text-danger py-4 fw-bold"><i class="bi bi-search me-2"></i> Data "${document.getElementById(inputId).value}" tidak ditemukan</td>`;
       }
   }
 
+  // --- PINDAH JURUSAN (SUPER ADMIN ONLY) ---
   function openEditJurusan(nisn, nama, currentJurusan) {
       if(!editJurusanModal) editJurusanModal = new bootstrap.Modal(document.getElementById('editJurusanModal'));
       document.getElementById('editNisn').value = nisn;
@@ -818,29 +1019,54 @@
       const nisn = document.getElementById('editNisn').value;
       const oldJurusan = document.getElementById('editOldJurusan').value;
       const newJurusan = document.getElementById('selectNewJurusan').value;
-      if(oldJurusan === newJurusan) { Swal.fire('Info', 'Jurusan sama.', 'info'); return; }
+      
+      if(oldJurusan === newJurusan) { Swal.fire('Info', 'Jurusan tujuan sama dengan jurusan saat ini.', 'info'); return; }
+      
       const token = localStorage.getItem('sessionToken');
-      Swal.fire({title: 'Memindahkan...', text: 'Tunggu sebentar', didOpen: () => Swal.showLoading()});
+      Swal.fire({title: 'Memindahkan Data...', text: 'Mohon tunggu', didOpen: () => Swal.showLoading()});
+      
       google.script.run.withSuccessHandler(res => {
-          if(res.success) { editJurusanModal.hide(); Swal.fire('Berhasil', res.message, 'success'); loadUsersList(); loadStats(); }
+          if(res.success) { 
+              editJurusanModal.hide(); 
+              Swal.fire('Berhasil', res.message, 'success'); 
+              loadUsersList(); 
+              loadStats(); 
+          }
           else Swal.fire('Gagal', res.error, 'error');
       }).api('adminChangeJurusan', { sessionToken: token, nisn: nisn, oldJurusan: oldJurusan, newJurusan: newJurusan });
   }
 
+  // --- EXPORT SPREADSHEET ---
   function handleExportSheet() {
       const token = localStorage.getItem('sessionToken');
       let jurusan = document.getElementById('selectJurusan').value;
       if (currentAdminJurusan !== '-') jurusan = currentAdminJurusan;
+      
+      if(!jurusan) { Swal.fire('Pilih Jurusan', 'Silakan pilih jurusan terlebih dahulu', 'warning'); return; }
+      
       const tahun = document.getElementById('selectTahun').value; 
-      Swal.fire({title: 'Creating Sheet...', text: 'Tunggu sebentar...', didOpen: () => Swal.showLoading()});
+      
+      Swal.fire({
+          title: 'Mempersiapkan File Laporan...', 
+          html: 'Proses ini mungkin memakan waktu beberapa detik untuk menempelkan foto.', 
+          didOpen: () => Swal.showLoading(),
+          allowOutsideClick: false
+      });
+      
       google.script.run.withSuccessHandler(res => {
           Swal.close();
-          if(res.success) Swal.fire({title: 'Berhasil', html: `<a href="${res.url}" target="_blank" class="btn btn-primary">Buka File</a>`, icon: 'success', showConfirmButton: false});
-          else Swal.fire('Gagal', res.error, 'error');
+          if(res.success) {
+              Swal.fire({
+                  title: 'Laporan Siap!', 
+                  text: 'File Spreadsheet berhasil dibuat di Google Drive Anda.',
+                  html: `<a href="${res.url}" target="_blank" class="btn btn-primary fw-bold px-4 mt-2 shadow-sm"><i class="bi bi-file-earmark-excel me-2"></i>BUKA FILE EXCEL</a>`, 
+                  icon: 'success', 
+                  showConfirmButton: false
+              });
+          } else Swal.fire('Gagal', res.error, 'error');
       }).api('adminExportSheet', { sessionToken: token, jurusan: jurusan, tahun: tahun });
   }
-
-  window.onload = function() { initAdmin(); };
 </script>
+
 </body>
 </html>

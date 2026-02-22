@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
   <head>
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem PKL SMKN 3 Kendari</title>
+    <title>Memuat... Sistem PKL SMKN 3 Kendari</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+      /* --- DESAIN LOADING SCREEN --- */
       body {
         margin: 0;
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #f4f6f9;
-        color: #333;
+        font-family: 'Poppins', sans-serif;
+        /* Gradient seragam dengan halaman login */
+        background: linear-gradient(135deg, #f8f9fa 0%, #e2e8f0 100%);
+        color: #334155;
         height: 100vh;
         display: flex;
         justify-content: center;
@@ -21,10 +26,10 @@
       
       /* Animasi Spinner Modern */
       .loader {
-        width: 48px;
-        height: 48px;
-        border: 5px solid #FFF;
-        border-bottom-color: #0d6efd;
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(37, 99, 235, 0.2); /* Biru transparan */
+        border-bottom-color: #2563eb; /* Biru utama */
         border-radius: 50%;
         display: inline-block;
         box-sizing: border-box;
@@ -39,67 +44,105 @@
 
       .loading-text {
         font-weight: 600;
-        color: #495057;
-        font-size: 0.85rem;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
+        color: #1e293b;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        animation: pulse 1.5s infinite;
+      }
+      
+      @keyframes pulse {
+          0% { opacity: 0.6; }
+          50% { opacity: 1; }
+          100% { opacity: 0.6; }
       }
 
-      /* Logo kecil di bawah loading */
+      /* Logo kecil pembuat aplikasi di bawah layar */
       .brand-footer {
         position: absolute;
         bottom: 30px;
         font-size: 0.75rem;
-        color: #adb5bd;
+        color: #94a3b8;
         font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
     </style>
     
     <script>
+      /**
+       * ======================================================================
+       * FRONTEND ROUTER (SINGLE PAGE APPLICATION)
+       * ======================================================================
+       * Script ini berjalan seketika saat URL aplikasi dibuka.
+       * Tugas utamanya adalah membaca LocalStorage browser untuk melihat 
+       * apakah user sudah punya token login atau belum, lalu mengunduh HTML
+       * yang sesuai dari server Google Apps Script.
+       */
       window.onload = function() {
-        // [LOGIKA ANTI-REDUNDANT] Ambil status session
+        
+        // 1. Cek Sesi (Session Token) yang tersimpan di memori HP/Browser
         const token = localStorage.getItem('sessionToken');
         const role = localStorage.getItem('userRole'); 
 
+        /**
+         * Fungsi untuk menimpa seluruh halaman dengan HTML baru dari Server
+         */
         function renderPage(html) {
            document.open(); 
            document.write(html); 
            document.close();
         }
 
+        /**
+         * Fungsi penanganan Error jika koneksi Google putus atau gagal muat
+         */
         function handleError(e) {
            console.error("Router Error: ", e);
-           // Jika error, hapus session agar user bisa login ulang dengan bersih
+           // Jika terjadi error fatal, bersihkan sesi agar mencegah loop login mati
            localStorage.clear();
+           
            document.body.innerHTML = `
-             <div style="text-align:center; padding:30px; font-family:sans-serif;">
-               <div style="color:#dc3545; font-size:3rem; margin-bottom:10px;">⚠️</div>
-               <h4 style="margin-bottom:10px; color:#343a40;">Koneksi Terputus</h4>
-               <p style="color:#6c757d; font-size:0.9rem;">Gagal menghubungkan ke server Google Apps Script.</p>
+             <div style="text-align:center; padding:30px; font-family:'Poppins', sans-serif;">
+               <div style="color:#ef4444; font-size:3rem; margin-bottom:15px;">⚠️</div>
+               <h4 style="margin-bottom:10px; color:#1e293b; font-weight:700;">Koneksi Terputus</h4>
+               <p style="color:#64748b; font-size:0.9rem;">Gagal menghubungkan ke server.<br>Pastikan internet Anda stabil.</p>
                <button onclick="window.top.location.reload()" 
-                       style="background:#0d6efd; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-weight:600; margin-top:15px;">
-                 Coba Lagi
+                       style="background:#2563eb; color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer; font-weight:600; margin-top:20px; box-shadow: 0 4px 6px rgba(37,99,235,0.2);">
+                 Muat Ulang Halaman
                </button>
              </div>
            `;
         }
 
-        // --- PROSES ROUTING ---
+        // ------------------------------------------------------------------
+        // 2. PROSES PENGALIHAN HALAMAN (ROUTING)
+        // ------------------------------------------------------------------
+        
         if (token && role) {
+           // KONDISI A: User Sudah Login
+           
            if (role === 'ADMIN') {
+             // Panggil dan render halaman 'admin.html'
              google.script.run
                .withSuccessHandler(renderPage)
                .withFailureHandler(handleError)
                .include('admin'); 
+               
            } else {
+             // Panggil dan render halaman 'dashboard.html' (Untuk Siswa)
              google.script.run
                .withSuccessHandler(renderPage)
                .withFailureHandler(handleError)
                .include('dashboard'); 
            }
+           
         } else {
-           // Jika tidak ada token, pastikan storage bersih lalu lempar ke login
+           // KONDISI B: User Belum Login (atau Token Hilang)
+           
+           // Pastikan storage benar-benar bersih
            localStorage.clear();
+           
+           // Panggil dan render halaman 'login.html'
            google.script.run
              .withSuccessHandler(renderPage)
              .withFailureHandler(handleError)
@@ -111,6 +154,7 @@
   <body>
     <div class="loader"></div>
     <div class="loading-text">Menyiapkan Ruang Kerja...</div>
-    <div class="brand-footer">SMKN 3 KENDARI</div>
+    
+    <div class="brand-footer">&copy; KP Informatika UHO 2026</div>
   </body>
 </html>

@@ -1,216 +1,275 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Login - Sistem PKL SMKN 3 Kendari</title>
   
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <style>
-    body { 
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        min-height: 100vh; /* Menggunakan min-height agar aman saat keyboard muncul */
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        padding: 15px; /* Mencegah konten mepet layar di HP */
+    :root {
+        --primary-bg: #f8f9fa;
+        --card-bg: rgba(255, 255, 255, 0.98);
+        --primary-color: #2563eb;
+        --secondary-color: #1e40af;
+        --text-dark: #334155;
     }
+
+    body { 
+        /* Background Biru Gradient Elegan */
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh; 
+        display: flex; 
+        flex-direction: column; /* Ubah ke column agar footer bisa di bawah */
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-dark);
+    }
+    
+    /* Membungkus form login agar posisinya di tengah */
+    .login-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* --- LOGIN CARD --- */
     .login-card { 
-        background: rgba(255, 255, 255, 0.98); 
+        background: var(--card-bg); 
         padding: 40px; 
         border-radius: 20px; 
         width: 100%; 
-        max-width: 400px; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+        max-width: 420px; 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
         position: relative;
         overflow: hidden;
     }
+    
+    /* Garis warna-warni di atas kartu */
     .login-card::before {
         content: "";
         position: absolute;
         top: 0; left: 0; right: 0; height: 5px;
-        background: linear-gradient(90deg, #3498db, #2ecc71);
+        background: linear-gradient(90deg, #3b82f6, #10b981);
     }
+    
     .logo-img { 
-        height: 85px; 
+        height: 90px; 
         display: block; 
         margin: 0 auto 15px; 
         filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        transition: all 0.3s ease;
+        transition: transform 0.3s ease;
     }
+    .logo-img:hover { transform: scale(1.05); }
+    
     .btn-primary { 
-        background: #1e3c72; 
+        background: var(--primary-color); 
         border: none; 
-        padding: 10px;
+        padding: 12px;
         font-weight: 600;
         transition: all 0.3s;
+        border-radius: 12px;
     }
     .btn-primary:hover { 
-        background: #2a5298; 
+        background: var(--secondary-color); 
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
     }
+    
+    .form-control { border-radius: 8px; padding: 10px 15px; font-size: 0.95rem; }
     .form-control:focus { 
-        box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1); 
-        border-color: #1e3c72; 
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); 
+        border-color: var(--primary-color); 
     }
+    .input-group-text { border-radius: 8px; }
+    
     .divider {
         display: flex;
         align-items: center;
         text-align: center;
-        margin: 20px 0;
-        color: #aaa;
+        margin: 25px 0;
+        color: #94a3b8;
         font-size: 0.8rem;
+        font-weight: 500;
     }
     .divider::before, .divider::after {
         content: '';
         flex: 1;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid #e2e8f0;
     }
-    .divider:not(:empty)::before { margin-right: .5em; }
-    .divider:not(:empty)::after { margin-left: .5em; }
+    .divider:not(:empty)::before { margin-right: .8em; }
+    .divider:not(:empty)::after { margin-left: .8em; }
     
-    .password-toggle { cursor: pointer; }
+    .password-toggle { cursor: pointer; border-radius: 0 8px 8px 0; }
 
-    /* --- RESPONSIVE MOBILE STYLES --- */
+    /* --- FOOTER PREMIUM --- */
+    .premium-footer {
+        background: rgba(0, 0, 0, 0.2); /* Sedikit transparan agar menyatu dgn background */
+        color: #ffffff;
+        padding: 20px 0;
+        text-align: center;
+        width: 100%;
+        backdrop-filter: blur(5px);
+    }
+    .footer-title {
+        font-weight: 600;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+    }
+    .footer-sub {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .heart-beat {
+        color: #ff4757;
+        display: inline-block;
+        animation: heartbeat 1.5s infinite;
+    }
+    @keyframes heartbeat {
+        0% { transform: scale(1); }
+        15% { transform: scale(1.3); }
+        30% { transform: scale(1); }
+        45% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+
+    /* --- RESPONSIVE MOBILE --- */
     @media (max-width: 576px) {
-        .login-card {
-            padding: 25px 20px; /* Padding lebih kecil di HP */
-            border-radius: 15px;
-        }
-        .logo-img {
-            height: 60px; /* Logo lebih kecil */
-            margin-bottom: 10px;
-        }
-        h4 { font-size: 1.2rem; } /* Judul lebih kecil */
-        small.text-muted { font-size: 0.8rem; }
-        
-        .form-control, .input-group-text, .btn {
-            font-size: 0.9rem; /* Font input & tombol lebih pas di HP */
-            padding: 8px 12px;
-        }
-        .mb-4 { margin-bottom: 1rem !important; } /* Jarak password diperrapat */
-        .divider { margin: 15px 0; }
+        .login-card { padding: 30px 20px; border-radius: 16px; }
+        .logo-img { height: 70px; margin-bottom: 10px; }
+        h4 { font-size: 1.3rem; } 
+        .form-control, .input-group-text, .btn { font-size: 0.9rem; padding: 10px; }
+        .divider { margin: 20px 0; }
+        .premium-footer { padding: 15px 0; }
     }
   </style>
 </head>
 <body>
 
-<div class="login-card animate__animated animate__zoomIn">
-  <img src="https://drive.google.com/thumbnail?id=1k4CSzwMHage8h4jJSXpZFkyA1TiogD3j&sz=w200" class="logo-img" alt="Logo SMK">
-  
-  <div class="text-center mb-4">
-      <h4 class="fw-bold text-dark m-0">SISTEM PKL</h4>
-      <small class="text-muted">SMKN 3 KENDARI</small>
-  </div>
-  
-  <form onsubmit="handleLogin(event)">
-    <div class="mb-3">
-      <label class="form-label fw-bold small text-secondary">NISN / Username</label>
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill text-primary"></i></span>
-        <input type="text" id="nisn" class="form-control border-start-0" required placeholder="Masukkan NISN">
+<div class="login-wrapper">
+    <div class="login-card animate__animated animate__zoomIn">
+      <img src="https://drive.google.com/thumbnail?id=1k4CSzwMHage8h4jJSXpZFkyA1TiogD3j&sz=w200" class="logo-img" alt="Logo SMK">
+      
+      <div class="text-center mb-4">
+          <h4 class="fw-bold text-dark m-0">SISTEM PKL</h4>
+          <small class="text-muted fw-bold">SMKN 3 KENDARI</small>
       </div>
-    </div>
-    
-    <div class="mb-4">
-      <label class="form-label fw-bold small text-secondary">Password</label>
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill text-primary"></i></span>
-        <input type="password" id="password" class="form-control border-start-0" required placeholder="********">
-        <span class="input-group-text bg-white password-toggle" onclick="togglePassword('password', 'iconLogin')">
-            <i class="bi bi-eye-slash" id="iconLogin"></i>
-        </span>
-      </div>
-    </div>
-    
-    <div class="d-grid mb-3">
-      <button type="submit" id="btnLogin" class="btn btn-primary rounded-pill">
-        MASUK <i class="bi bi-box-arrow-in-right ms-2"></i>
-      </button>
-    </div>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-secondary">NISN / Username</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill text-primary"></i></span>
+            <input type="text" id="nisn" class="form-control border-start-0" required placeholder="Masukkan NISN">
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="form-label fw-bold small text-secondary">Password</label>
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill text-primary"></i></span>
+            <input type="password" id="password" class="form-control border-start-0 border-end-0" required placeholder="********">
+            <span class="input-group-text bg-white password-toggle border-start-0" onclick="togglePassword('password', 'iconLogin')">
+                <i class="bi bi-eye-slash text-muted" id="iconLogin"></i>
+            </span>
+          </div>
+        </div>
+        
+        <div class="d-grid mb-3">
+          <button type="submit" id="btnLogin" class="btn btn-primary shadow">
+            MASUK <i class="bi bi-box-arrow-in-right ms-2"></i>
+          </button>
+        </div>
 
-    <div class="divider">BELUM PUNYA AKUN?</div>
+        <div class="divider">ATAU</div>
 
-    <div class="d-grid">
-        <button type="button" class="btn btn-outline-success fw-bold btn-sm py-2" data-bs-toggle="modal" data-bs-target="#registerModal">
-            <i class="bi bi-person-plus-fill me-1"></i> DAFTAR AKUN SENDIRI
-        </button>
+        <div class="d-grid">
+            <button type="button" class="btn btn-outline-success fw-bold py-2 rounded-3 border-2" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="bi bi-person-plus-fill me-1"></i> DAFTAR AKUN BARU
+            </button>
+        </div>
+      </form>
     </div>
-  </form>
 </div>
 
 <div class="modal fade" id="registerModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> 
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-success text-white py-2">
-        <h6 class="modal-title fw-bold"><i class="bi bi-person-badge me-2"></i>Daftar Siswa PKL</h6>
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header bg-success text-white py-3 border-0" style="border-radius: 16px 16px 0 0;">
+        <h6 class="modal-title fw-bold"><i class="bi bi-person-badge me-2"></i>Pendaftaran Siswa Baru</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body p-3 bg-light">
+      <div class="modal-body p-4 bg-light">
         <form onsubmit="handleRegister(event)">
             
-            <div class="alert alert-info small py-2 mb-2" style="font-size: 0.75rem;">
-                <i class="bi bi-info-circle-fill me-1"></i> NISN tidak bisa diubah setelah daftar.
-            </div>
-
-            <div class="mb-2">
-                <label class="form-label small fw-bold text-dark mb-1">NISN</label>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" id="regNisn" class="form-control form-control-sm" required placeholder="Contoh: 005xxxx">
-            </div>
-            
-            <div class="mb-2">
-                <label class="form-label small fw-bold text-dark mb-1">Nama Lengkap</label>
-                <input type="text" id="regNama" class="form-control form-control-sm" required placeholder="Nama Sesuai Absen">
-            </div>
-
-            <div class="mb-2">
-                <label class="form-label small fw-bold text-dark mb-1">Tahun PKL</label>
-                <input type="number" id="regTahun" class="form-control form-control-sm" required placeholder="Contoh: 2026" min="2024" max="2030">
-            </div>
-            
-            <div class="mb-2">
-                <label class="form-label small fw-bold text-dark mb-1">Jurusan</label>
-                <select id="regJurusan" class="form-select form-select-sm" required>
-                    <option value="" disabled selected>- Pilih Jurusan -</option>
-                    <option value="tjkt">TJKT (TKJ)</option>
-                    <option value="perhotelan">Perhotelan</option>
-                    <option value="tata_boga">Tata Boga</option>
-                    <option value="tata_busana">Tata Busana</option>
-                    <option value="tata_kecantikan">Tata Kecantikan</option>
-                </select>
-            </div>
-            
-            <div class="mb-2">
-                <label class="form-label small fw-bold text-dark mb-1">Buat Password</label>
-                <div class="input-group input-group-sm">
-                    <input type="password" id="regPass" class="form-control" required minlength="6" placeholder="Minimal 6 karakter">
-                    <span class="input-group-text bg-white password-toggle" onclick="togglePassword('regPass', 'iconReg1')">
-                        <i class="bi bi-eye-slash" id="iconReg1"></i>
-                    </span>
-                </div>
+            <div class="alert alert-warning small border-0 shadow-sm mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i> 
+                <strong>Perhatian:</strong> NISN tidak dapat diubah setelah Anda terdaftar.
             </div>
 
             <div class="mb-3">
-                <label class="form-label small fw-bold text-dark mb-1">Ulangi Password</label>
-                <div class="input-group input-group-sm">
-                    <input type="password" id="regPassConfirm" class="form-control" required minlength="6" placeholder="Ketik ulang password">
-                    <span class="input-group-text bg-white password-toggle" onclick="togglePassword('regPassConfirm', 'iconReg2')">
-                        <i class="bi bi-eye-slash" id="iconReg2"></i>
-                    </span>
-                </div>
-                <div id="passError" class="text-danger small mt-1 d-none fw-bold" style="font-size: 0.7rem;"><i class="bi bi-x-circle me-1"></i> Password tidak sama!</div>
+                <label class="form-label small fw-bold text-dark mb-1">NISN</label>
+                <input type="text" id="regNisn" class="form-control" required placeholder="Contoh: 0056781234">
             </div>
             
-            <div class="d-grid gap-2">
-                <button type="submit" id="btnRegister" class="btn btn-success btn-sm fw-bold shadow-sm py-2">
-                    DAFTAR SEKARANG <i class="bi bi-check-circle ms-1"></i>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-dark mb-1">Nama Lengkap</label>
+                <input type="text" id="regNama" class="form-control" required placeholder="Sesuai Absensi Sekolah">
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label small fw-bold text-dark mb-1">Tahun PKL</label>
+                    <input type="number" id="regTahun" class="form-control" required placeholder="Ex: 2026" min="2024" max="2030">
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label small fw-bold text-dark mb-1">Jurusan</label>
+                    <select id="regJurusan" class="form-select" required>
+                        <option value="" disabled selected>Pilih...</option>
+                        <option value="tjkt">TJKT (TKJ)</option>
+                        <option value="perhotelan">Perhotelan</option>
+                        <option value="tata_boga">Tata Boga</option>
+                        <option value="tata_busana">Tata Busana</option>
+                        <option value="tata_kecantikan">Kecantikan</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-dark mb-1">Buat Password</label>
+                <div class="input-group shadow-sm">
+                    <input type="password" id="regPass" class="form-control border-end-0" required minlength="6" placeholder="Minimal 6 karakter">
+                    <span class="input-group-text bg-white password-toggle border-start-0" onclick="togglePassword('regPass', 'iconReg1')">
+                        <i class="bi bi-eye-slash text-muted" id="iconReg1"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-dark mb-1">Ulangi Password</label>
+                <div class="input-group shadow-sm">
+                    <input type="password" id="regPassConfirm" class="form-control border-end-0" required minlength="6" placeholder="Ketik ulang password">
+                    <span class="input-group-text bg-white password-toggle border-start-0" onclick="togglePassword('regPassConfirm', 'iconReg2')">
+                        <i class="bi bi-eye-slash text-muted" id="iconReg2"></i>
+                    </span>
+                </div>
+                <div id="passError" class="text-danger small mt-2 d-none fw-bold"><i class="bi bi-x-circle-fill me-1"></i> Password tidak cocok!</div>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" id="btnRegister" class="btn btn-success fw-bold shadow py-2 rounded-3">
+                    DAFTAR SEKARANG <i class="bi bi-check-circle-fill ms-2"></i>
                 </button>
             </div>
         </form>
@@ -219,10 +278,17 @@
   </div>
 </div>
 
+<footer class="premium-footer">
+  <div class="footer-title">KP INFORMATIKA UHO 2026</div>
+  <div class="footer-sub">Dibuat dengan <span class="heart-beat">❤</span> untuk SMKN 3 Kendari</div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  // --- FITUR LIHAT PASSWORD ---
+  /**
+   * --- 1. FITUR LIHAT PASSWORD (Mata Terbuka/Tertutup) ---
+   */
   function togglePassword(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
@@ -230,16 +296,17 @@
       if (input.type === "password") {
           input.type = "text";
           icon.classList.remove("bi-eye-slash");
-          icon.classList.add("bi-eye");
+          icon.classList.add("bi-eye", "text-primary");
       } else {
           input.type = "password";
-          icon.classList.remove("bi-eye");
+          icon.classList.remove("bi-eye", "text-primary");
           icon.classList.add("bi-eye-slash");
       }
   }
 
-  // --- 1. LOGIKA LOGIN ---
-  // --- 1. LOGIKA LOGIN (ANTI-SANDBOX ERROR) ---
+  /**
+   * --- 2. LOGIKA LOGIN & REDIRECT ---
+   */
   function handleLogin(e) {
     e.preventDefault();
     
@@ -247,52 +314,49 @@
     const nisn = document.getElementById('nisn').value;
     const password = document.getElementById('password').value;
     
-    // UI Loading
+    // UI State: Loading
     btn.disabled = true; 
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memeriksa...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memeriksa Data...';
     
+    // Kirim request ke backend (Code.gs -> api('login'))
     google.script.run.withSuccessHandler(res => {
       if (res.success) {
+        
+        // Simpan sesi di browser
         localStorage.setItem('sessionToken', res.sessionToken);
         localStorage.setItem('userRole', res.role);
         
-        // --- PERUBAHAN UTAMA DISINI ---
-        // Alih-alih redirect otomatis, kita minta user klik tombol lagi
+        // Ambil URL Aplikasi untuk Redirect
         google.script.run.withSuccessHandler(url => {
            const targetPage = (res.role === 'ADMIN') ? 'admin' : 'dashboard';
            const finalUrl = url + '?page=' + targetPage;
            
-           // Ubah tampilan tombol menjadi tombol sukses
+           // Ubah tombol jadi tombol masuk paksa (Anti-Iframe Block)
            btn.disabled = false;
-           btn.className = "btn btn-success rounded-pill fw-bold w-100";
-           btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> LOGIN SUKSES! KLIK DISINI';
+           btn.className = "btn btn-success fw-bold w-100 shadow animate__animated animate__pulse";
+           btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> LOGIN BERHASIL! LANJUTKAN';
            
-           // Hapus event submit form agar tidak loop
+           // Hapus event submit form bawaan
            const form = document.querySelector('form');
            form.onsubmit = (ev) => ev.preventDefault();
 
-           // Ganti fungsi klik tombol untuk melakukan redirect
+           // Eksekusi pemindahan halaman jika tombol diklik
            btn.onclick = function() {
-               btn.innerHTML = 'Mengalihkan...';
-               window.open(finalUrl, '_top'); // '_top' adalah kunci keluar dari iframe
+               btn.innerHTML = 'Memuat Halaman...';
+               window.open(finalUrl, '_top'); // Buka di tab yg sama (_top untuk lepas dari frame GAS)
            };
-           
-           // Opsional: Klik otomatis link tersembunyi (kadang masih diblokir, tapi patut dicoba sebagai fallback)
-           // const link = document.createElement('a');
-           // link.href = finalUrl;
-           // link.target = "_top";
-           // document.body.appendChild(link);
-           // link.click(); 
 
         }).getAppUrl();
         
       } else {
+        // Jika Password/NISN salah
         Swal.fire({
-            title: 'Login Gagal',
+            title: 'Akses Ditolak',
             text: res.error,
             icon: 'error',
-            confirmButtonColor: '#d33'
+            confirmButtonColor: '#ef4444',
+            customClass: { popup: 'rounded-4' }
         });
         btn.disabled = false; 
         btn.innerHTML = originalText;
@@ -300,7 +364,9 @@
     }).api('login', { nisn: nisn, password: password });
   }
 
-  // --- 2. LOGIKA REGISTRASI ---
+  /**
+   * --- 3. LOGIKA REGISTRASI AKUN BARU ---
+   */
   function handleRegister(e) {
       e.preventDefault();
       
@@ -309,7 +375,7 @@
       const pass2 = document.getElementById('regPassConfirm').value;
       const errorMsg = document.getElementById('passError');
 
-      // Validasi Password
+      // Validasi Kecocokan Password
       if (pass1 !== pass2) {
           errorMsg.classList.remove('d-none'); 
           document.getElementById('regPassConfirm').classList.add('is-invalid');
@@ -319,6 +385,7 @@
           document.getElementById('regPassConfirm').classList.remove('is-invalid');
       }
 
+      // Payload data ke Backend
       const formData = {
           nisn: document.getElementById('regNisn').value,
           nama: document.getElementById('regNama').value,
@@ -327,25 +394,28 @@
           tahun: document.getElementById('regTahun').value
       };
 
+      // Keamanan sederhana
       if(formData.nisn.length < 4) {
-          Swal.fire('Warning', 'NISN terlalu pendek', 'warning'); return;
+          Swal.fire('Format Salah', 'NISN / Username terlalu pendek', 'warning'); return;
       }
 
-      // UI Loading
+      // UI State: Loading
       btn.disabled = true; 
       const originalText = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mendaftar...';
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan Data...';
 
+      // Eksekusi API Register
       google.script.run.withSuccessHandler(res => {
           btn.disabled = false; 
           btn.innerHTML = originalText;
 
           if(res.success) {
+              // Tutup Modal Bootstrap
               const modalEl = document.getElementById('registerModal');
               const modal = bootstrap.Modal.getInstance(modalEl);
               modal.hide();
 
-              // Reset Form
+              // Bersihkan (Reset) Form
               document.getElementById('regNisn').value = "";
               document.getElementById('regNama').value = "";
               document.getElementById('regPass').value = "";
@@ -353,29 +423,27 @@
               document.getElementById('regTahun').value = ""; 
               document.getElementById('regJurusan').selectedIndex = 0;
 
-              // Sukses Message
+              // Notifikasi Sukses
               Swal.fire({
-                  title: 'Pendaftaran Berhasil!',
-                  html: `Akun Anda telah dibuat.<br>Silakan Login menggunakan:<br><b>NISN: ${formData.nisn}</b>`,
+                  title: 'Berhasil Mendaftar!',
+                  html: `Akun Anda siap digunakan.<br>Silakan Login menggunakan NISN:<br><b class="text-primary mt-2 d-inline-block fs-5">${formData.nisn}</b>`,
                   icon: 'success',
-                  confirmButtonColor: '#1e3c72',
-                  confirmButtonText: 'OK, Saya Mengerti'
+                  confirmButtonColor: '#2563eb',
+                  confirmButtonText: 'Tutup & Login',
+                  customClass: { popup: 'rounded-4' }
               });
           } else {
               Swal.fire({
                   title: 'Gagal Mendaftar',
                   text: res.error,
                   icon: 'error',
-                  confirmButtonColor: '#d33'
+                  confirmButtonColor: '#ef4444',
+                  customClass: { popup: 'rounded-4' }
               });
           }
       }).api('register', formData);
   }
 </script>
-
-<footer class="fixed-bottom text-center text-white pb-3 small" style="font-size: 0.7rem; opacity: 0.6;">
-    &copy; 2026 Informatika UHO
-</footer>
 
 </body>
 </html>

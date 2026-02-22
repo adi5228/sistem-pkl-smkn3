@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Logo_Halu_Oleo_University.png" alt="Logo UHO" width="100"/>
+  <img src="https://wsrv.nl/?url=uho.ac.id/wp-content/uploads/2022/11/logo-7.png&bg=white&pad=20" alt="Logo UHO" width="500"/>
+  
   <h1>🎓 Sistem Informasi Pendataan PKL <br> SMKN 3 Kendari</h1>
   <p><i>Aplikasi Web Single Page Application (SPA) berbasis Google Apps Script & Google Sheets</i></p>
 </div>
@@ -17,7 +18,7 @@ Proyek ini dibangun dengan penuh dedikasi oleh Tim Kerja Praktik (KP) Mahasiswa 
 | **Indah Lestari** | `E1E123004` | *UI/UX Design & Frontend Integration* |
 | **Nirmala** | `E1E123012` | *System Testing & Database Management* |
 
-*(Catatan: Peran di atas bisa Anda sesuaikan sendiri di GitHub jika diperlukan)* ❤️
+❤️
 
 ---
 
